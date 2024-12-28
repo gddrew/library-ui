@@ -1,46 +1,66 @@
-import { MongoClient } from "mongodb";
+import apiClient from '../lib/apiClient';
 
-const uri = process.env.MONGODB_URI!;
-const dbName = process.env.MONGODB_DB;
-const client = new MongoClient(uri);
-await client.connect();
-const db = client.db(dbName);
-
-async function listInvoices() {
-  const data = await db.collection("invoices").aggregate([
-    {
-      $match: { amount: 25 } // Filter invoices with amount 25
-    },
-    {
-      $lookup: {
-        from: "patrons", // The customers collection
-        localField: "patronId", // The field in invoices
-        foreignField: "patronId", // The field in customers
-        as: "patronDetails" // Output array field for joined data
-      }
-    },
-    {
-      $unwind: "$patronDetails" // Flatten the array from the $lookup
-    },
-    {
-      $project: {
-        amount: 1, // Include the amount field
-        "patronDetails.patron_name": 1 // Include the name field from the joined data
-      }
-    }
-  ]).toArray();
-
-  return data.map(item => ({
-    amount: item.amount,
-    campaign: item.campaign,
-    name: item.patronDetails.patron_name
-  }));
+// Fetch all invoices
+export async function listInvoices() {
+  try {
+    const response = await apiClient.get(`/api/invoices/invoice`);
+    return response.data.map((invoice: any) => ({
+      amount: invoice.amount,
+      campaign: invoice.campaign,
+      patronId: invoice.patronId,
+      status: invoice.status,
+    }));
+  } catch (error) {
+    console.error('Error fetching invoices:', error);
+    throw error;
+  }
 }
 
-export async function GET() {
+// Fetch a single invoice by ID
+export async function getInvoiceById(invoiceId: string) {
   try {
-  	return Response.json(await listInvoices());
+    const response = await apiClient.get(`/api/invoices/invoice/${invoiceId}`);
+    return response.data;
   } catch (error) {
-  	return Response.json({ error }, { status: 500 });
+    console.error(`Error fetching invoice with ID ${invoiceId}:`, error);
+    throw error;
+  }
+}
+
+// Create a new invoice
+export async function createInvoice(invoiceData: any) {
+  try {
+    const response = await apiClient.post(
+      `/api/invoices/invoice/create`,
+      invoiceData
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error creating invoice:', error);
+    throw error;
+  }
+}
+
+// Update an existing invoice
+export async function updateInvoice(invoiceId: string, invoiceData: any) {
+  try {
+    const response = await apiClient.put(
+      `/api/invoices/invoice/${invoiceId}`,
+      invoiceData
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating invoice with ID ${invoiceId}:`, error);
+    throw error;
+  }
+}
+
+// Delete an invoice (if applicable in your API)
+export async function deleteInvoice(invoiceId: string) {
+  try {
+    await apiClient.delete(`/api/invoices/invoice/${invoiceId}`);
+  } catch (error) {
+    console.error(`Error deleting invoice with ID ${invoiceId}:`, error);
+    throw error;
   }
 }
