@@ -5,7 +5,7 @@ import React from 'react';
 
 // Define a type for your invoice items
 interface Invoice {
-  id: string;
+  invoiceId: number;
   patron_name: string;
   email_address: string;
   status: string;
@@ -34,7 +34,7 @@ export default function InvoicesTable({
           <div className='md:hidden'>
             {invoices?.map((invoice) => (
               <div
-                key={invoice.id}
+                key={invoice.invoiceId}
                 className='mb-2 w-full rounded-md bg-white p-4'
               >
                 <div className='flex items-center justify-between border-b pb-4'>
@@ -97,7 +97,7 @@ export default function InvoicesTable({
             <tbody className='bg-white'>
               {invoices?.map((invoice) => (
                 <tr
-                  key={invoice.id}
+                  key={invoice.invoiceId}
                   className='w-full border-b py-3 text-sm last-of-type:border-none 
                   [&:first-child>td:first-child]:rounded-tl-lg 
                   [&:first-child>td:last-child]:rounded-tr-lg 
@@ -126,8 +126,8 @@ export default function InvoicesTable({
                   </td>
                   <td className='whitespace-nowrap py-3 pl-6 pr-3'>
                     <div className='flex justify-end gap-3'>
-                      <UpdateInvoice id={invoice.id} />
-                      <DeleteInvoice id={invoice.id} />
+                      <UpdateInvoice id={invoice.invoiceId} />
+                      <DeleteInvoice id={invoice.invoiceId} />
                     </div>
                   </td>
                 </tr>

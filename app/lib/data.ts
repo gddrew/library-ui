@@ -57,13 +57,19 @@ export async function fetchInvoicesPages(
 ) {
   try {
     const offset = (currentPage - 1) * itemsPerPage;
-    const response = await apiClient.get(`/api/invoices/invoice`, {
+    const response = await apiClient.get(`/api/invoices`, {
       params: { query, offset, limit: itemsPerPage },
     });
 
+    const totalCount = response.data.length;
+    const paginatedInvoices = response.data.slice(
+      offset,
+      offset + itemsPerPage
+    );
+
     return {
-      invoices: response.data.invoices,
-      totalPages: Math.ceil(response.data.totalCount / itemsPerPage),
+      invoices: paginatedInvoices,
+      totalPages: Math.ceil(totalCount / itemsPerPage),
     };
   } catch (error) {
     console.error('Error fetching paginated invoices:', error);
