@@ -1,11 +1,11 @@
-import apiClient from '../lib/apiClient';
-import { Invoice } from '../lib/definitions';
+import apiClient from './apiClient';
+import { CreateInvoicePayload, Invoice } from './definitions';
 
 // Fetch all invoices
-export async function listInvoices(): Promise<Invoice> {
+export async function listInvoices(): Promise<Invoice[]> {
   try {
     const response = await apiClient.get(`/api/reports/invoices-patrons`);
-    return response.data.map((invoice: any) => ({
+    return response.data.map((invoice: Invoice) => ({
       invoiceId: invoice.invoiceId,
       amount: invoice.amount,
       campaign: invoice.campaign,
@@ -22,7 +22,7 @@ export async function listInvoices(): Promise<Invoice> {
 }
 
 // Fetch a single invoice by ID
-export async function getInvoiceById(invoiceId: string) {
+export async function getInvoiceById(invoiceId: number) {
   try {
     const response = await apiClient.get(`/api/invoices/invoice/${invoiceId}`);
     return response.data;
@@ -33,13 +33,15 @@ export async function getInvoiceById(invoiceId: string) {
 }
 
 // Create a new invoice
-export async function createInvoice(invoiceData: any) {
+export async function createInvoice(
+  invoiceData: CreateInvoicePayload
+): Promise<Invoice> {
   try {
     const response = await apiClient.post(
       `/api/invoices/invoice/create`,
       invoiceData
     );
-    return response.data;
+    return response.data as Invoice;
   } catch (error) {
     console.error('Error creating invoice:', error);
     throw error;
@@ -47,7 +49,7 @@ export async function createInvoice(invoiceData: any) {
 }
 
 // Update an existing invoice
-export async function updateInvoice(invoiceId: string, invoiceData: any) {
+export async function updateInvoice(invoiceId: number, invoiceData: Invoice) {
   try {
     const response = await apiClient.put(
       `/api/invoices/invoice/${invoiceId}`,
@@ -60,8 +62,8 @@ export async function updateInvoice(invoiceId: string, invoiceData: any) {
   }
 }
 
-// Delete an invoice (if applicable in your API)
-export async function deleteInvoice(invoiceId: string) {
+// Delete an invoice
+export async function deleteInvoice(invoiceId: number) {
   try {
     await apiClient.delete(`/api/invoices/invoice/${invoiceId}`);
   } catch (error) {

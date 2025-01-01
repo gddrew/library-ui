@@ -1,6 +1,6 @@
 import { UpdateInvoice, DeleteInvoice } from '@/app/ui/invoices/buttons';
 import InvoiceStatus from '@/app/ui/invoices/status';
-import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
+import { formatDateToLocal, formatCurrency } from '@/app/services/utils';
 import React from 'react';
 
 // Define a type for your invoice items
@@ -10,7 +10,7 @@ interface Invoice {
   emailAddress: string;
   status: string;
   amount: number;
-  campaign: number;
+  campaign: string;
   date: string;
 }
 
@@ -21,11 +21,7 @@ type InvoicesTableProps = {
   invoices: Invoice[]; // accept the array from the parent
 };
 
-export default function InvoicesTable({
-  query,
-  currentPage,
-  invoices,
-}: InvoicesTableProps) {
+export default function InvoicesTable({ invoices }: InvoicesTableProps) {
   return (
     <div className='mt-6 flow-root'>
       <div className='inline-block min-w-full align-middle'>

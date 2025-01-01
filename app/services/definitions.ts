@@ -1,8 +1,5 @@
 // This file contains type definitions for your data.
 // It describes the shape of the data, and what data type each property should accept.
-// For simplicity of teaching, we're manually defining these types.
-// However, these types are generated automatically if you're using an ORM such as Prisma.
-
 export type User = {
   id: string;
   name: string;
@@ -12,15 +9,26 @@ export type User = {
 
 export type Patron = {
   patronId: number;
-  patron_name: string;
-  patron_status: string;
+  patronName: string;
+  status: string;
+  dateOfBirth: Date;
+  streetAddress: string;
+  cityName: string;
+  stateName: string;
+  zipCode: string;
+  telephoneHome: string;
+  telephoneMobile: string;
+  emailAddress: string;
+  contactMethod: string;
+  created_date: Date;
+  lastUpdateDate: Date;
 };
 
 export type Invoice = {
-  //_id: string;
   invoiceId: number;
   patronId: number;
   patronName: string;
+  emailAddress: string;
   amount: number;
   campaign: string;
   date: string;
@@ -29,15 +37,10 @@ export type Invoice = {
   status: 'pending' | 'paid';
 };
 
-export type RawInvoice = {
-  invoiceId: number;
-  patronId: number;
-  patronName: string;
-  amount: number;
-  campaign: string;
-  status: string;
-  date: string; // API-provided format
-};
+export type CreateInvoicePayload = Omit<
+  Invoice,
+  'invoiceId' | 'patronName' | 'emailAddress' | 'date'
+>;
 
 export type Revenue = {
   month: string;
@@ -45,9 +48,9 @@ export type Revenue = {
 };
 
 export type LatestInvoice = {
-  id: string;
-  patron_name: string;
-  email_address: string;
+  invoiceId: number;
+  patronName: string;
+  emailAddress: string;
   amount: string;
 };
 
@@ -57,8 +60,8 @@ export type LatestInvoiceRaw = Omit<LatestInvoice, 'amount'> & {
 };
 
 export type InvoicesTable = {
-  id: string;
-  patronId: string;
+  invoiceId: number;
+  patronId: number;
   patronName: string;
   emailAddress: string;
   date: string;
@@ -68,7 +71,7 @@ export type InvoicesTable = {
 };
 
 export type PatronsTableType = {
-  id: string;
+  patronId: number;
   patronName: string;
   emailAddress: string;
   totalInvoices: number;
@@ -77,7 +80,7 @@ export type PatronsTableType = {
 };
 
 export type FormattedPatronsTable = {
-  patronId: string;
+  patronId: number;
   patronName: string;
   emailAddress: string;
   totalInvoices: number;
@@ -91,8 +94,8 @@ export type PatronField = {
 };
 
 export type InvoiceForm = {
-  id: string;
-  patronId: string;
+  invoiceId: number;
+  patronId: number;
   amount: number;
   campaign: string;
   status: 'pending' | 'paid';

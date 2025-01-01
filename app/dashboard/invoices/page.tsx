@@ -7,8 +7,8 @@ import Table from '@/app/ui/invoices/table';
 import { CreateInvoice } from '@/app/ui/invoices/buttons';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
 import { lusitana } from '@/app/ui/fonts';
-import { Invoice } from '@/app/lib/definitions';
-import { listInvoices } from '@/app/query/route';
+import { Invoice } from '@/app/services/definitions';
+import { listInvoices } from '@/app/services/invoiceService';
 import { useSearchParams } from 'next/navigation';
 
 export default function InvoicesPage() {

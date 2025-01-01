@@ -11,7 +11,7 @@ import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import apiClient from '../lib/apiClient';
+import apiClient from '../services/apiClient';
 import Cookies from 'js-cookie';
 
 export default function LoginForm() {
