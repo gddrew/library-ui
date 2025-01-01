@@ -20,12 +20,23 @@ export type Invoice = {
   //_id: string;
   invoiceId: number;
   patronId: number;
+  patronName: string;
   amount: number;
   campaign: string;
   date: string;
   // In TypeScript, this is called a string union type.
   // It means that the "status" property can only be one of the two strings: 'pending' or 'paid'.
   status: 'pending' | 'paid';
+};
+
+export type RawInvoice = {
+  invoiceId: number;
+  patronId: number;
+  patronName: string;
+  amount: number;
+  campaign: string;
+  status: string;
+  date: string; // API-provided format
 };
 
 export type Revenue = {
@@ -48,8 +59,8 @@ export type LatestInvoiceRaw = Omit<LatestInvoice, 'amount'> & {
 export type InvoicesTable = {
   id: string;
   patronId: string;
-  patron_name: string;
-  email_address: string;
+  patronName: string;
+  emailAddress: string;
   date: string;
   amount: number;
   campaign: string;
@@ -58,25 +69,25 @@ export type InvoicesTable = {
 
 export type PatronsTableType = {
   id: string;
-  patron_name: string;
-  email_address: string;
-  total_invoices: number;
-  total_pending: number;
-  total_paid: number;
+  patronName: string;
+  emailAddress: string;
+  totalInvoices: number;
+  totalPending: number;
+  totalPaid: number;
 };
 
 export type FormattedPatronsTable = {
   patronId: string;
-  patron_name: string;
-  email_address: string;
-  total_invoices: number;
-  total_pending: string;
-  total_paid: string;
+  patronName: string;
+  emailAddress: string;
+  totalInvoices: number;
+  totalPending: string;
+  totalPaid: string;
 };
 
 export type PatronField = {
   patronId: number;
-  patron_name: string;
+  patronName: string;
 };
 
 export type InvoiceForm = {

@@ -1,5 +1,3 @@
-import { Revenue } from './definitions';
-
 export const formatCurrency = (amount: number) => {
   return (amount / 100).toLocaleString('en-US', {
     style: 'currency',
@@ -8,10 +6,18 @@ export const formatCurrency = (amount: number) => {
 };
 
 export const formatDateToLocal = (
-  dateStr: string,
-  locale: string = 'en-US',
+  dateStr: string | undefined,
+  locale: string = 'en-US'
 ) => {
+  if (!dateStr) {
+    return 'N/A'; // Fallback for missing dates
+  }
+
   const date = new Date(dateStr);
+  if (isNaN(date.getTime())) {
+    return 'Invalid Date'; // Fallback for invalid dates
+  }
+
   const options: Intl.DateTimeFormatOptions = {
     day: 'numeric',
     month: 'short',
@@ -19,6 +25,11 @@ export const formatDateToLocal = (
   };
   const formatter = new Intl.DateTimeFormat(locale, options);
   return formatter.format(date);
+};
+
+export type Revenue = {
+  month: string;
+  revenue: number;
 };
 
 export const generateYAxis = (revenue: Revenue[]) => {

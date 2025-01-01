@@ -1,14 +1,19 @@
 import apiClient from '../lib/apiClient';
+import { Invoice } from '../lib/definitions';
 
 // Fetch all invoices
-export async function listInvoices() {
+export async function listInvoices(): Promise<Invoice> {
   try {
-    const response = await apiClient.get(`/api/invoices/invoice`);
+    const response = await apiClient.get(`/api/reports/invoices-patrons`);
     return response.data.map((invoice: any) => ({
+      invoiceId: invoice.invoiceId,
       amount: invoice.amount,
       campaign: invoice.campaign,
       patronId: invoice.patronId,
       status: invoice.status,
+      date: invoice.date,
+      patronName: invoice.patronName,
+      emailAddress: invoice.emailAddress,
     }));
   } catch (error) {
     console.error('Error fetching invoices:', error);

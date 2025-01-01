@@ -6,8 +6,8 @@ import React from 'react';
 // Define a type for your invoice items
 interface Invoice {
   invoiceId: number;
-  patron_name: string;
-  email_address: string;
+  patronName: string;
+  emailAddress: string;
   status: string;
   amount: number;
   campaign: number;
@@ -40,10 +40,10 @@ export default function InvoicesTable({
                 <div className='flex items-center justify-between border-b pb-4'>
                   <div>
                     <div className='mb-2 flex items-center'>
-                      <p>{invoice.patron_name}</p>
+                      <p>{invoice.patronName}</p>
                     </div>
                     <p className='text-sm text-gray-500'>
-                      {invoice.email_address}
+                      {invoice.emailAddress}
                     </p>
                   </div>
                   <InvoiceStatus status={invoice.status} />
@@ -53,14 +53,12 @@ export default function InvoicesTable({
                     <p className='text-xl font-medium'>
                       {formatCurrency(invoice.amount)}
                     </p>
-                    <p className='text-xl font-medium'>
-                      {formatCurrency(invoice.campaign)}
-                    </p>
+                    <p className='text-xl font-medium'>{invoice.campaign}</p>
                     <p>{formatDateToLocal(invoice.date)}</p>
                   </div>
                   <div className='flex justify-end gap-2'>
-                    <UpdateInvoice id={invoice.id} />
-                    <DeleteInvoice id={invoice.id} />
+                    <UpdateInvoice id={invoice.invoiceId} />
+                    <DeleteInvoice id={invoice.invoiceId} />
                   </div>
                 </div>
               </div>
@@ -106,17 +104,17 @@ export default function InvoicesTable({
                 >
                   <td className='whitespace-nowrap py-3 pl-6 pr-3'>
                     <div className='flex items-center gap-3'>
-                      <p>{invoice.patron_name}</p>
+                      <p>{invoice.patronName}</p>
                     </div>
                   </td>
                   <td className='whitespace-nowrap px-3 py-3'>
-                    {invoice.email_address}
+                    {invoice.emailAddress}
                   </td>
                   <td className='whitespace-nowrap px-3 py-3'>
                     {formatCurrency(invoice.amount)}
                   </td>
                   <td className='whitespace-nowrap px-3 py-3'>
-                    {formatCurrency(invoice.campaign)}
+                    {invoice.campaign}
                   </td>
                   <td className='whitespace-nowrap px-3 py-3'>
                     {formatDateToLocal(invoice.date)}

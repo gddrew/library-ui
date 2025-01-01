@@ -7,7 +7,8 @@ import Table from '@/app/ui/invoices/table';
 import { CreateInvoice } from '@/app/ui/invoices/buttons';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
 import { lusitana } from '@/app/ui/fonts';
-import { fetchInvoicesPages } from '@/app/lib/data';
+import { Invoice } from '@/app/lib/definitions';
+import { listInvoices } from '@/app/query/route';
 import { useSearchParams } from 'next/navigation';
 
 export default function InvoicesPage() {
@@ -15,24 +16,32 @@ export default function InvoicesPage() {
   const query = searchParams.get('query') || '';
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
 
-  const [invoices, setInvoices] = useState<any[]>([]);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-    fetchInvoicesPages(query, currentPage)
-      .then((res) => {
-        setInvoices(res.invoices);
-        setTotalPages(res.totalPages);
-      })
-      .catch((err) => {
-        console.error('Error:', err);
-        // handle error state if desired
-      })
-      .finally(() => {
+    const fetchInvoices = async () => {
+      setLoading(true);
+      try {
+        const allInvoices = await listInvoices();
+        const itemsPerPage = 7; // Adjust if needed
+        const offset = (currentPage - 1) * itemsPerPage;
+        const paginatedInvoices = allInvoices.slice(
+          offset,
+          offset + itemsPerPage
+        );
+
+        setInvoices(paginatedInvoices);
+        setTotalPages(Math.ceil(allInvoices.length / itemsPerPage));
+      } catch (err) {
+        console.error('Error fetching invoices:', err);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchInvoices();
   }, [query, currentPage]);
 
   return (
