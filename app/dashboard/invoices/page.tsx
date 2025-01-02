@@ -25,15 +25,21 @@ export default function InvoicesPage() {
       setLoading(true);
       try {
         const allInvoices = await listInvoices();
+        const filteredInvoices = allInvoices.filter((inv) => {
+          return (
+            inv.patronName.toLowerCase().includes(query.toLowerCase()) ||
+            inv.invoiceId.toString().includes(query)
+          );
+        });
         const itemsPerPage = 7; // Adjust if needed
         const offset = (currentPage - 1) * itemsPerPage;
-        const paginatedInvoices = allInvoices.slice(
+        const paginatedInvoices = filteredInvoices.slice(
           offset,
           offset + itemsPerPage
         );
 
         setInvoices(paginatedInvoices);
-        setTotalPages(Math.ceil(allInvoices.length / itemsPerPage));
+        setTotalPages(Math.ceil(filteredInvoices.length / itemsPerPage));
       } catch (err) {
         console.error('Error fetching invoices:', err);
       } finally {
