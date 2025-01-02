@@ -13,25 +13,32 @@ import {
 import { Button } from '@/app/ui/button';
 import CampaignSelector from './campaign-selector';
 import { createInvoice } from '@/app/services/invoiceService';
+import { useRouter } from 'next/navigation';
+import CurrencyInput from 'react-currency-input-field';
 
 export default function Form({ patrons }: { patrons: PatronField[] }) {
   const [selectedCampaign, setSelectedCampaign] = useState<string>('');
+  const [amountInput, setAmountInput] = useState<string>('');
+  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
     const patronId = formData.get('patronId') as string;
-    const amount = formData.get('amount') as string;
     const status = formData.get('status') as string;
+    const decimalValue = parseFloat(amountInput || '0');
+    const amountInCents = Math.round(decimalValue * 100);
 
     try {
       await createInvoice({
         patronId: parseInt(patronId, 10),
-        amount: parseFloat(amount),
+        amount: amountInCents,
         status: status === 'paid' ? 'paid' : 'pending',
         campaign: selectedCampaign,
       });
+
+      router.push('/dashboard/invoices');
     } catch (err) {
       console.error('Failed to create invoice', err);
     }
@@ -85,13 +92,17 @@ export default function Form({ patrons }: { patrons: PatronField[] }) {
           </label>
           <div className='relative mt-2 rounded-md'>
             <div className='relative'>
-              <input
+              <CurrencyInput
                 id='amount'
-                name='amount'
-                type='number'
-                step='0.01'
-                placeholder='Enter USD amount'
                 className='peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500'
+                prefix='$'
+                groupSeparator=','
+                decimalSeparator='.'
+                decimalsLimit={2}
+                defaultValue={0}
+                value={amountInput}
+                onValueChange={(value) => setAmountInput(value || '')}
+                placeholder='Enter USD amount'
               />
               <CurrencyDollarIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900' />
             </div>
