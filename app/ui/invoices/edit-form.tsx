@@ -1,6 +1,9 @@
 'use client';
 
-import { PatronField, InvoiceForm } from '@/app/services/definitions';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { updateInvoice } from '@/app/services/invoiceService';
+import { InvoiceForm, PatronField } from '@/app/services/definitions';
 import {
   CheckIcon,
   ClockIcon,
@@ -9,16 +12,67 @@ import {
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
+import CampaignSelector from './campaign-selector';
 
 export default function EditInvoiceForm({
   invoice,
   patrons,
 }: {
   invoice: InvoiceForm;
-  customers: PatronField[];
+  patrons: PatronField[];
 }) {
+  const router = useRouter();
+  const [, setSelectedCampaign] = useState(invoice.campaign);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const invoiceId = parseInt(
+      formData.get('invoiceId')?.toString() ?? '0',
+      10
+    );
+    const patronId = parseInt(formData.get('patronId')?.toString() ?? '0', 10);
+    const campaign = formData.get('campaign')?.toString() ?? invoice.campaign;
+    const decimalValue = parseFloat(formData.get('amount')?.toString() ?? '0');
+    const statusFromForm = formData.get('status')?.toString();
+    const invoiceStatus: 'paid' | 'pending' =
+      statusFromForm === 'paid' ? 'paid' : 'pending';
+
+    const updatedData = {
+      invoiceId,
+      patronId,
+      amount: Math.round(decimalValue * 100),
+      status: invoiceStatus,
+      campaign,
+      patronName: invoice.patronName,
+      emailAddress: invoice.emailAddress,
+      date: invoice.date,
+    };
+
+    try {
+      await updateInvoice(invoiceId, updatedData);
+      router.push('/dashboard/invoices');
+    } catch (error) {
+      console.error('Failed to update invoice', error);
+    }
+  }
+
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
+      <div className='mb-4'>
+        <label htmlFor='invoiceId' className='mb-2 block text-sm font-medium'>
+          Invoice ID
+        </label>
+        <input
+          id='invoiceId'
+          name='invoiceId'
+          type='text'
+          value={invoice.invoiceId.toString()}
+          readOnly
+          className='block w-full rounded-md border border-gray-200 py-2 pl-3 text-sm text-gray-500 cursor-not-allowed'
+        />
+      </div>
       <div className='rounded-md bg-gray-50 p-4 md:p-6'>
         {/* Customer Name */}
         <div className='mb-4'>
@@ -37,12 +91,24 @@ export default function EditInvoiceForm({
               </option>
               {patrons.map((patron) => (
                 <option key={patron.patronId} value={patron.patronId}>
-                  {patron.patron_name}
+                  {patron.patronName}
                 </option>
               ))}
             </select>
             <UserCircleIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
           </div>
+        </div>
+
+        {/* Campaign */}
+        <div className='mb-4'>
+          <label htmlFor='campaign' className='mb-2 block text-sm font-medium'>
+            Campaign
+          </label>
+          <CampaignSelector
+            initialCampaign={invoice.campaign}
+            onSelectCampaign={setSelectedCampaign}
+            className='peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500'
+          />
         </div>
 
         {/* Invoice Amount */}
@@ -57,7 +123,7 @@ export default function EditInvoiceForm({
                 name='amount'
                 type='number'
                 step='0.01'
-                defaultValue={invoice.amount}
+                defaultValue={(invoice.amount / 100).toFixed(2)}
                 placeholder='Enter USD amount'
                 className='peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500'
               />
@@ -116,7 +182,7 @@ export default function EditInvoiceForm({
         >
           Cancel
         </Link>
-        <Button type='submit'>Edit Invoice</Button>
+        <Button type='submit'>Update</Button>
       </div>
     </form>
   );

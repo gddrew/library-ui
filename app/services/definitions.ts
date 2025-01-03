@@ -96,6 +96,9 @@ export type PatronField = {
 export type InvoiceForm = {
   invoiceId: number;
   patronId: number;
+  patronName: string;
+  emailAddress: string;
+  date: string;
   amount: number;
   campaign: string;
   status: 'pending' | 'paid';

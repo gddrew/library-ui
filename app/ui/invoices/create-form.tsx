@@ -157,7 +157,7 @@ export default function Form({ patrons }: { patrons: PatronField[] }) {
         >
           Cancel
         </Link>
-        <Button type='submit'>Create Invoice</Button>
+        <Button type='submit'>Save</Button>
       </div>
     </form>
   );

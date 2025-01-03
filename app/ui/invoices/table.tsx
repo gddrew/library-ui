@@ -66,6 +66,9 @@ export default function InvoicesTable({ invoices }: InvoicesTableProps) {
             <thead className='rounded-lg text-left text-sm font-normal'>
               <tr>
                 <th scope='col' className='px-4 py-5 font-medium sm:pl-6'>
+                  Invoice ID
+                </th>
+                <th scope='col' className='px-4 py-5 font-medium sm:pl-6'>
                   Patron
                 </th>
                 <th scope='col' className='px-3 py-5 font-medium'>
@@ -98,6 +101,9 @@ export default function InvoicesTable({ invoices }: InvoicesTableProps) {
                   [&:last-child>td:first-child]:rounded-bl-lg 
                   [&:last-child>td:last-child]:rounded-br-lg'
                 >
+                  <td className='whitespace-nowrap px-6 py-3'>
+                    {invoice.invoiceId}
+                  </td>
                   <td className='whitespace-nowrap py-3 pl-6 pr-3'>
                     <div className='flex items-center gap-3'>
                       <p>{invoice.patronName}</p>
