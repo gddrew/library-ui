@@ -1,6 +1,10 @@
+'use client';
+
+import React, { useState } from 'react';
 import { deleteInvoice } from '@/app/services/invoiceService';
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import { Invoice } from '@/app/services/definitions';
 
 export function CreateInvoice() {
   return (
@@ -14,10 +18,10 @@ export function CreateInvoice() {
   );
 }
 
-export function UpdateInvoice({ id }: { id: string }) {
+export function UpdateInvoice({ invoiceId }: { invoiceId: number }) {
   return (
     <Link
-      href={`/dashboard/invoices/${id}/edit`}
+      href={`/dashboard/invoices/${invoiceId}/edit`}
       className='rounded-md border p-2 hover:bg-gray-100'
     >
       <PencilIcon className='w-5' />
@@ -25,14 +29,64 @@ export function UpdateInvoice({ id }: { id: string }) {
   );
 }
 
-export function DeleteInvoice({ invoiceId }: { invoiceId: number }) {
-  const deleteInvoiceWithId = deleteInvoice.bind(null, invoiceId);
+export function DeleteInvoice({
+  invoiceId,
+  invoices,
+  setInvoices,
+}: {
+  invoiceId: number;
+  invoices: Invoice[];
+  setInvoices: React.Dispatch<React.SetStateAction<Invoice[]>>;
+}) {
+  const [showConfirm, setShowConfirm] = useState(false);
+  //const router = useRouter();
+
+  async function handleConfirmDelete() {
+    try {
+      await deleteInvoice(invoiceId);
+      setInvoices(invoices.filter((inv) => inv.invoiceId !== invoiceId));
+    } catch (error) {
+      console.error('Failed to delete invoice', error);
+    } finally {
+      setShowConfirm(false);
+    }
+  }
   return (
-    <form action={deleteInvoiceWithId}>
-      <button className='rounded-md border p-2 hover:bg-gray-100'>
+    <>
+      {/* Delete button that triggers modal */}
+      <button
+        type='button'
+        onClick={() => setShowConfirm(true)}
+        className='rounded-md border p-2 hover:bg-gray-100'
+      >
         <span className='sr-only'>Delete</span>
         <TrashIcon className='w-5' />
       </button>
-    </form>
+
+      {/* Simple confirmation dialog */}
+      {showConfirm && (
+        <div className='fixed inset-0 flex items-center justify-center bg-black/30'>
+          <div className='rounded-md bg-white p-4'>
+            <p className='mb-2 text-sm'>
+              Are you sure you want to delete this invoice?
+            </p>
+            <div className='flex justify-end gap-2'>
+              <button
+                onClick={handleConfirmDelete}
+                className='rounded-md bg-red-500 px-3 py-2 text-white'
+              >
+                Yes, Delete
+              </button>
+              <button
+                onClick={() => setShowConfirm(false)}
+                className='rounded-md bg-gray-200 px-3 py-2'
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

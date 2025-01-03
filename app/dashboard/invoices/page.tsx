@@ -63,7 +63,12 @@ export default function InvoicesPage() {
         <InvoicesTableSkeleton />
       ) : (
         <>
-          <Table query={query} currentPage={currentPage} invoices={invoices} />
+          <Table
+            query={query}
+            currentPage={currentPage}
+            invoices={invoices}
+            setInvoices={setInvoices}
+          />
           <div className='mt-5 flex w-full justify-center'>
             <Pagination totalPages={totalPages} />
           </div>

@@ -1,27 +1,21 @@
+import React from 'react';
 import { UpdateInvoice, DeleteInvoice } from '@/app/ui/invoices/buttons';
 import InvoiceStatus from '@/app/ui/invoices/status';
 import { formatDateToLocal, formatCurrency } from '@/app/services/utils';
-import React from 'react';
-
-// Define a type for your invoice items
-interface Invoice {
-  invoiceId: number;
-  patronName: string;
-  emailAddress: string;
-  status: string;
-  amount: number;
-  campaign: string;
-  date: string;
-}
+import { Invoice } from '@/app/services/definitions';
 
 // Define the props for your Table
 type InvoicesTableProps = {
   query: string;
   currentPage: number;
-  invoices: Invoice[]; // accept the array from the parent
+  invoices: Invoice[];
+  setInvoices: React.Dispatch<React.SetStateAction<Invoice[]>>;
 };
 
-export default function InvoicesTable({ invoices }: InvoicesTableProps) {
+export default function InvoicesTable({
+  invoices,
+  setInvoices,
+}: InvoicesTableProps) {
   return (
     <div className='mt-6 flow-root'>
       <div className='inline-block min-w-full align-middle'>
@@ -53,8 +47,12 @@ export default function InvoicesTable({ invoices }: InvoicesTableProps) {
                     <p>{formatDateToLocal(invoice.date)}</p>
                   </div>
                   <div className='flex justify-end gap-2'>
-                    <UpdateInvoice id={invoice.invoiceId} />
-                    <DeleteInvoice id={invoice.invoiceId} />
+                    <UpdateInvoice invoiceId={invoice.invoiceId} />
+                    <DeleteInvoice
+                      invoiceId={invoice.invoiceId}
+                      invoices={invoices}
+                      setInvoices={setInvoices}
+                    />
                   </div>
                 </div>
               </div>
@@ -126,8 +124,12 @@ export default function InvoicesTable({ invoices }: InvoicesTableProps) {
                   </td>
                   <td className='whitespace-nowrap py-3 pl-6 pr-3'>
                     <div className='flex justify-end gap-3'>
-                      <UpdateInvoice id={invoice.invoiceId} />
-                      <DeleteInvoice id={invoice.invoiceId} />
+                      <UpdateInvoice invoiceId={invoice.invoiceId} />
+                      <DeleteInvoice
+                        invoiceId={invoice.invoiceId}
+                        invoices={invoices}
+                        setInvoices={setInvoices}
+                      />
                     </div>
                   </td>
                 </tr>
