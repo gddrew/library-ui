@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   campaigns as campaignData,
   Campaign,
@@ -20,9 +20,9 @@ const CampaignSelector: React.FC<CampaignSelectorProps> = ({
     campaignData.filter((campaign) => campaign.active)
   );
 
-  // If the user is editing an invoice that has a campaign not in the list
-  // (e.g. it's marked active=false or doesn't exist at all), we can add it.
-  React.useEffect(() => {
+  // If there's an initialCampaign not in the list (maybe it's inactive),
+  // add it so the user can see it in the dropdown.
+  useEffect(() => {
     if (initialCampaign && !campaigns.some((c) => c.name === initialCampaign)) {
       // Add that campaign so it appears in the dropdown
       setCampaigns((prev) => [
@@ -40,24 +40,8 @@ const CampaignSelector: React.FC<CampaignSelectorProps> = ({
   // Update the parent whenever we change our local selection
   const handleCampaignChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
-    if (value === 'add_new') {
-      setSelectedCampaign('add_new');
-    } else {
-      setSelectedCampaign(value);
-      onSelectCampaign(value);
-    }
-  };
-
-  const [newCampaign, setNewCampaign] = useState<string>('');
-
-  const handleAddCampaign = () => {
-    if (newCampaign && !campaigns.some((c) => c.name === newCampaign)) {
-      const newCampaignEntry = { name: newCampaign, active: true };
-      setCampaigns([...campaigns, newCampaignEntry]);
-      setSelectedCampaign(newCampaign);
-      onSelectCampaign(newCampaign);
-      setNewCampaign('');
-    }
+    setSelectedCampaign(value);
+    onSelectCampaign(value);
   };
 
   return (
@@ -77,32 +61,9 @@ const CampaignSelector: React.FC<CampaignSelectorProps> = ({
               {campaign.name}
             </option>
           ))}
-          <option value='add_new'>Add a new campaign</option>
         </select>
         <BanknotesIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
       </div>
-
-      {/* Add New Campaign Input */}
-      {selectedCampaign === 'add_new' && (
-        <div className='mt-2'>
-          <div className='relative'>
-            <input
-              type='text'
-              value={newCampaign}
-              onChange={(e) => setNewCampaign(e.target.value)}
-              placeholder='Enter new campaign name'
-              className='block w-full rounded-md border border-gray-200 py-2 pl-3 text-sm outline-2 placeholder:text-gray-500'
-            />
-          </div>
-          <button
-            type='button'
-            onClick={handleAddCampaign}
-            className='mt-2 inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700'
-          >
-            Add Campaign
-          </button>
-        </div>
-      )}
     </div>
   );
 };
