@@ -1,3 +1,19 @@
+// Format ISBN numbers
+export function formatISBN13(isbn: string | number): string {
+  const isbnStr = isbn.toString().replace(/[^0-9]/g, '');
+
+  // if (isbnStr.length !== 13) {
+  //   throw new Error('Invalid ISBN-13: Must be a 13-digit number.');
+  // }
+  const prefix = isbnStr.substring(0, 3); // e.g., 978 or 979
+  const group = isbnStr.substring(3, 4); // Assuming group is 1 digit
+  const publisher = isbnStr.substring(4, 8); // Assuming publisher is 4 digits
+  const title = isbnStr.substring(8, 12); // Assuming title is 4 digits
+  const checkDigit = isbnStr.substring(12);
+
+  return `${prefix}-${group}-${publisher}-${title}-${checkDigit}`;
+}
+
 export const formatCurrency = (amount: number) => {
   return (amount / 100).toLocaleString('en-US', {
     style: 'currency',
@@ -19,12 +35,15 @@ export const formatDateToLocal = (
   }
 
   const options: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    month: 'short',
     year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
   };
   const formatter = new Intl.DateTimeFormat(locale, options);
-  return formatter.format(date);
+
+  const formattedDated = formatter.format(date);
+  const [month, day, year] = formattedDated.split('/');
+  return `${month}/${day}/${year}`;
 };
 
 export type Revenue = {

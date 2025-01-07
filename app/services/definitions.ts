@@ -24,6 +24,27 @@ export type Patron = {
   lastUpdateDate: Date;
 };
 
+export type Media = {
+  mediaId: number;
+  created_date: Date;
+  mediaTitle: string;
+  authorName: string;
+  isbnId: string;
+  barCodeId: string;
+  publicationYear: string;
+  mediaType: string;
+  mediaFormat: string;
+  numberPages: number;
+  classificationCategory: string;
+  classificationSubCategory: string;
+  publisherName: string;
+  disposalDisposition: string;
+  acquisitionDate: Date;
+  lastUpdateDate: Date;
+  status: string;
+  isSensitive: boolean;
+};
+
 export type Invoice = {
   invoiceId: number;
   patronId: number;
@@ -40,6 +61,11 @@ export type Invoice = {
 export type CreateInvoicePayload = Omit<
   Invoice,
   'invoiceId' | 'patronName' | 'emailAddress' | 'date'
+>;
+
+export type CreateMediaPayload = Omit<
+  Media,
+  'mediaId' | 'mediaTitle' | 'authorName'
 >;
 
 export type Revenue = {
