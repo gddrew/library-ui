@@ -50,26 +50,23 @@ export default function MediaTable({ media }: MediaTableProps) {
           <table className='hidden min-w-full text-gray-900 md:table'>
             <thead className='rounded-lg text-left text-sm font-normal'>
               <tr>
-                <th scope='col' className='px-4 py-5 font-medium sm:pl-6'>
+                <th scope='col' className='px-4 py-4 font-medium sm:pl-6'>
                   Media ID
                 </th>
-                <th scope='col' className='px-4 py-5 font-medium sm:pl-6'>
+                <th scope='col' className='px-4 py-4 font-medium sm:pl-6'>
                   Title
                 </th>
-                <th scope='col' className='px-3 py-5 font-medium'>
+                <th scope='col' className='px-3 py-4 font-medium'>
                   Author
                 </th>
-                <th scope='col' className='px-3 py-5 font-medium'>
+                <th scope='col' className='px-3 py-4 font-medium'>
                   Publisher
                 </th>
-                <th scope='col' className='px-3 py-5 font-medium'>
+                <th scope='col' className='px-3 py-4 font-medium'>
                   ISBN
                 </th>
-                <th scope='col' className='px-3 py-5 font-medium'>
-                  Status
-                </th>
-                <th scope='col' className='relative py-3 pl-6 pr-3'>
-                  <span className='sr-only'>Edit</span>
+                <th scope='col' className='px-3 py-4 font-medium'>
+                  Acquisition Date
                 </th>
               </tr>
             </thead>
@@ -101,14 +98,8 @@ export default function MediaTable({ media }: MediaTableProps) {
                     {formatISBN13(media.isbnId)}
                   </td>
                   <td className='whitespace-nowrap px-3 py-3'>
-                    {/* <MediaStatus status={media.status} /> */}
                     {formatDateToLocal(media.acquisitionDate)}
                   </td>
-                  {/* <td className='whitespace-nowrap py-3 pl-6 pr-3'>
-                    <div className='flex justify-end gap-3'>
-                      <UpdateMedia mediaId={media.mediaId} />
-                    </div>
-                  </td> */}
                 </tr>
               ))}
             </tbody>

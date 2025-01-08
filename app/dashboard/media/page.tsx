@@ -28,7 +28,7 @@ export default function MediaPage() {
         const filteredMedia = allMedia.filter((media) => {
           return media.mediaTitle.toLowerCase().includes(query.toLowerCase());
         });
-        const itemsPerPage = 7;
+        const itemsPerPage = 10;
         const offset = (currentPage - 1) * itemsPerPage;
         const paginatedMedia = filteredMedia.slice(
           offset,
