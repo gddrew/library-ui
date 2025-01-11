@@ -22,7 +22,7 @@ export const formatCurrency = (amount: number) => {
 };
 
 export const formatDateToLocal = (
-  dateStr: string | undefined,
+  dateStr: Date | string | undefined,
   locale: string = 'en-US'
 ) => {
   if (!dateStr) {
@@ -65,35 +65,54 @@ export const generateYAxis = (revenue: Revenue[]) => {
   return { yAxisLabels, topLabel };
 };
 
-export const generatePagination = (currentPage: number, totalPages: number) => {
-  // If the total number of pages is 7 or less,
-  // display all pages without any ellipsis.
+export const generatePagination = (
+  currentPage: number,
+  totalPages: number,
+  onPrefetch?: (page: number) => void
+): (number | string)[] => {
+  const pages: (number | string)[] = [];
+
+  // Prefetch helper
+  const prefetchPage = (page: number) => {
+    if (onPrefetch && page > 0 && page <= totalPages) {
+      onPrefetch(page);
+    }
+  };
+
+  // If totalPages <= 7, show all pages without ellipsis
   if (totalPages <= 7) {
-    return Array.from({ length: totalPages }, (_, i) => i + 1);
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(i);
+      prefetchPage(i);
+    }
+    return pages;
   }
 
-  // If the current page is among the first 3 pages,
-  // show the first 3, an ellipsis, and the last 2 pages.
+  // If currentPage is among the first 3 pages
   if (currentPage <= 3) {
-    return [1, 2, 3, '...', totalPages - 1, totalPages];
+    pages.push(1, 2, 3, '...', totalPages - 1, totalPages);
+    prefetchPage(4); // Prefetch next page after the last visible
+    return pages;
   }
 
-  // If the current page is among the last 3 pages,
-  // show the first 2, an ellipsis, and the last 3 pages.
+  // If currentPage is among the last 3 pages
   if (currentPage >= totalPages - 2) {
-    return [1, 2, '...', totalPages - 2, totalPages - 1, totalPages];
+    pages.push(1, 2, '...', totalPages - 2, totalPages - 1, totalPages);
+    prefetchPage(totalPages - 3); // Prefetch page before the first visible
+    return pages;
   }
 
-  // If the current page is somewhere in the middle,
-  // show the first page, an ellipsis, the current page and its neighbors,
-  // another ellipsis, and the last page.
-  return [
+  // If currentPage is somewhere in the middle
+  pages.push(
     1,
     '...',
     currentPage - 1,
     currentPage,
     currentPage + 1,
     '...',
-    totalPages,
-  ];
+    totalPages
+  );
+  prefetchPage(currentPage - 2); // Prefetch two pages before current
+  prefetchPage(currentPage + 2); // Prefetch two pages after current
+  return pages;
 };

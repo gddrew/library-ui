@@ -14,7 +14,7 @@ type MediaTableProps = {
 
 export default function MediaTable({ media }: MediaTableProps) {
   return (
-    <div className='mt-6 flow-root'>
+    <div className='overflow-x-auto mt-6 flow-root'>
       <div className='inline-block min-w-full align-middle'>
         <div className='rounded-lg bg-gray-50 p-2 md:pt-0'>
           {/* Mobile version */}
@@ -45,59 +45,47 @@ export default function MediaTable({ media }: MediaTableProps) {
               </div>
             ))}
           </div>
-
           {/* Desktop version */}
-          <table className='hidden min-w-full text-gray-900 md:table'>
-            <thead className='rounded-lg text-left text-sm font-normal'>
+          <table className='table-fixed w-full text-gray-900'>
+            <thead className='bg-gray-100 text-left text-sm font-normal'>
               <tr>
-                <th scope='col' className='px-4 py-4 font-medium sm:pl-6'>
+                <th scope='col' className='w-24 px-4 py-3 font-medium sm:pl-6'>
                   Media ID
                 </th>
-                <th scope='col' className='px-4 py-4 font-medium sm:pl-6'>
+                <th scope='col' className='w-60 px-4 py-3 font-medium sm:pl-6'>
                   Title
                 </th>
-                <th scope='col' className='px-3 py-4 font-medium'>
+                <th scope='col' className='w-40 px-3 py-3 font-medium'>
                   Author
                 </th>
-                <th scope='col' className='px-3 py-4 font-medium'>
+                <th scope='col' className='w-40 px-3 py-3 font-medium'>
                   Publisher
                 </th>
-                <th scope='col' className='px-3 py-4 font-medium'>
+                <th scope='col' className='w-40 px-3 py-3 font-medium'>
                   ISBN
                 </th>
-                <th scope='col' className='px-3 py-4 font-medium'>
+                <th scope='col' className='w-24 px-3 py-3 font-medium'>
                   Acquisition Date
                 </th>
               </tr>
             </thead>
             <tbody className='bg-white'>
               {media?.map((media) => (
-                <tr
-                  key={media.mediaId}
-                  className='w-full border-b py-3 text-sm last-of-type:border-none 
-                  [&:first-child>td:first-child]:rounded-tl-lg 
-                  [&:first-child>td:last-child]:rounded-tr-lg 
-                  [&:last-child>td:first-child]:rounded-bl-lg 
-                  [&:last-child>td:last-child]:rounded-br-lg'
-                >
-                  <td className='whitespace-nowrap px-6 py-3'>
-                    {media.mediaId}
+                <tr key={media.mediaId} className='border-b text-sm'>
+                  <td className='truncate px-6 py-3'>{media.mediaId}</td>
+                  <td className='truncate px-6 py-3 overflow-hidden text-ellipsis whitespace-nowrap w-60'>
+                    {media.mediaTitle}
                   </td>
-                  <td className='whitespace-nowrap py-3 pl-6 pr-3'>
-                    <div className='flex items-center gap-3'>
-                      <p>{media.mediaTitle}</p>
-                    </div>
-                  </td>
-                  <td className='whitespace-nowrap px-3 py-3'>
+                  <td className='truncate px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap w-40'>
                     {media.authorName}
                   </td>
-                  <td className='whitespace-nowrap px-3 py-3'>
+                  <td className='truncate px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap w-40'>
                     {media.publisherName}
                   </td>
-                  <td className='whitespace-nowrap px-3 py-3'>
+                  <td className='truncate px-3 py-3'>
                     {formatISBN13(media.isbnId)}
                   </td>
-                  <td className='whitespace-nowrap px-3 py-3'>
+                  <td className='truncate px-3 py-3'>
                     {formatDateToLocal(media.acquisitionDate)}
                   </td>
                 </tr>
