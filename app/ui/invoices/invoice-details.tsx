@@ -231,7 +231,7 @@ export default function InvoiceDetails({
         </fieldset>
 
         {/* Action buttons */}
-        <div className='mt-6 flex gap-4'>
+        <div className='mt-6 flex items-center gap-4'>
           {isEditing ? (
             <>
               <button
@@ -248,23 +248,24 @@ export default function InvoiceDetails({
               <button
                 type='button'
                 onClick={handleEdit}
-                className='inline-flex items-center gap-1 rounded-md bg-gray-100 px-3 py-1 text-gray-700 hover:bg-gray-200'
+                className='flex h-10 items-center rounded-lg bg-brown-400 px-4 text-sm font-medium text-white hover:bg-brown-500'
               >
                 Edit
               </button>
-              <button
-                type='button'
-                onClick={handleShowDelete}
-                className='inline-flex items-center gap-1 rounded-md bg-red-500 px-3 py-1 text-white hover:bg-red-600'
-              >
-                Delete
-              </button>
               <Link
                 href='/dashboard/invoices'
-                className='inline-flex items-center gap-1 rounded-md bg-gray-100 px-3 py-1 text-gray-700 hover:bg-gray-200'
+                className='flex h-10 items-center rounded-lg bg-gray-100 px-4 py-1 text-gray-700 hover:bg-gray-200'
               >
                 Back
               </Link>
+              {/* Delete on the far right */}
+              <button
+                type='button'
+                onClick={handleShowDelete}
+                className='ml-auto flex h-10 items-center rounded-lg bg-red-500 px-4 py-1 text-white hover:bg-red-600'
+              >
+                Delete
+              </button>
             </>
           )}
         </div>
