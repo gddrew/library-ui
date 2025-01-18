@@ -1,4 +1,4 @@
-import Form from '@/app/ui/invoices/edit-form';
+import Form from '@/app/ui/invoices/invoice-details';
 import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
 import { getInvoiceById } from '@/app/services/invoiceService';
 import { listPatrons } from '@/app/services/patronService';

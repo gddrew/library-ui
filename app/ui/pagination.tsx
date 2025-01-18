@@ -8,10 +8,10 @@ import { usePathname, useSearchParams } from 'next/navigation';
 
 export default function Pagination({
   totalPages,
-  onPrefetchPage,
+  onPrefetchPage = () => {}, // Default to no-op
 }: {
   totalPages: number;
-  onPrefetchPage: (page: number) => void; // Callback for prefetching
+  onPrefetchPage?: (page: number) => void; // Optional callback for prefetching
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
