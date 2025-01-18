@@ -57,43 +57,36 @@ export default function InvoicesTable({ invoices }: InvoicesTableProps) {
           </div>
 
           {/* Desktop version */}
-          <table className='hidden min-w-full text-gray-900 md:table'>
+          <table className='table-fixed w-full text-gray-900'>
             <thead className='rounded-lg text-left text-sm font-normal'>
               <tr>
-                <th scope='col' className='px-4 py-5 font-medium sm:pl-6'>
+                <th scope='col' className='w-24 px-4 py-5 font-medium sm:pl-6'>
                   Invoice ID
                 </th>
-                <th scope='col' className='px-4 py-5 font-medium sm:pl-6'>
+                <th scope='col' className='w-40 px-4 py-5 font-medium sm:pl-6'>
                   Patron
                 </th>
-                <th scope='col' className='px-3 py-5 font-medium'>
+                <th scope='col' className='w-60 px-3 py-5 font-medium'>
                   Email
                 </th>
-                <th scope='col' className='px-3 py-5 font-medium'>
+                <th scope='col' className='w-24 px-3 py-5 font-medium'>
                   Amount
                 </th>
-                <th scope='col' className='px-3 py-5 font-medium'>
+                <th scope='col' className='w-40 px-3 py-5 font-medium'>
                   Campaign
                 </th>
-                <th scope='col' className='px-3 py-5 font-medium'>
+                <th scope='col' className='w-24 px-3 py-5 font-medium'>
                   Date
                 </th>
-                <th scope='col' className='px-3 py-5 font-medium'>
+                <th scope='col' className='w-24 px-3 py-5 font-medium'>
                   Status
                 </th>
               </tr>
             </thead>
             <tbody className='bg-white'>
               {invoices?.map((invoice) => (
-                <tr
-                  key={invoice.invoiceId}
-                  className='w-full border-b py-3 text-sm last-of-type:border-none 
-                  [&:first-child>td:first-child]:rounded-tl-lg 
-                  [&:first-child>td:last-child]:rounded-tr-lg 
-                  [&:last-child>td:first-child]:rounded-bl-lg 
-                  [&:last-child>td:last-child]:rounded-br-lg'
-                >
-                  <td className='whitespace-nowrap px-6 py-3'>
+                <tr key={invoice.invoiceId} className='border-b text-sm'>
+                  <td className='truncate px-6 py-3'>
                     <Link
                       href={`/dashboard/invoices/${invoice.invoiceId}`}
                       className='hover:text-blue-600'
@@ -101,24 +94,24 @@ export default function InvoicesTable({ invoices }: InvoicesTableProps) {
                       {invoice.invoiceId}
                     </Link>
                   </td>
-                  <td className='whitespace-nowrap py-3 pl-6 pr-3'>
+                  <td className='truncate py-3 pl-6 pr-3 overflow-hidden text-ellipsis whitespace-nowrap w-40'>
                     <div className='flex items-center gap-3'>
                       <p>{invoice.patronName}</p>
                     </div>
                   </td>
-                  <td className='whitespace-nowrap px-3 py-3'>
+                  <td className='truncate px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap w-60'>
                     {invoice.emailAddress}
                   </td>
-                  <td className='whitespace-nowrap px-3 py-3'>
+                  <td className='truncate px-3 py-3'>
                     {formatCurrency(invoice.amount)}
                   </td>
-                  <td className='whitespace-nowrap px-3 py-3'>
+                  <td className='truncate px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap w-40'>
                     {invoice.campaign}
                   </td>
-                  <td className='whitespace-nowrap px-3 py-3'>
+                  <td className='truncate px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap w-24'>
                     {formatDateToLocal(invoice.date)}
                   </td>
-                  <td className='whitespace-nowrap px-3 py-3'>
+                  <td className='truncate px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap w-24'>
                     <InvoiceStatus status={invoice.status} />
                   </td>
                 </tr>

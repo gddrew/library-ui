@@ -9,12 +9,14 @@ interface CampaignSelectorProps {
   onSelectCampaign: (campaign: string) => void;
   className: string;
   initialCampaign?: string;
+  disabled?: boolean;
 }
 
 const CampaignSelector: React.FC<CampaignSelectorProps> = ({
   onSelectCampaign,
   className,
   initialCampaign,
+  disabled = false,
 }) => {
   const [campaigns, setCampaigns] = useState<Campaign[]>(
     campaignData.filter((campaign) => campaign.active)
@@ -53,6 +55,7 @@ const CampaignSelector: React.FC<CampaignSelectorProps> = ({
           name='campaign'
           value={selectedCampaign}
           onChange={handleCampaignChange}
+          disabled={disabled}
           className={className}
         >
           <option value=''>Select a campaign</option>

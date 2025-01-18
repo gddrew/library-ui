@@ -3,6 +3,7 @@ import { listPatrons } from '@/app/services/patronService';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import InvoiceDetails from '@/app/ui/invoices/invoice-details';
+import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
 
 export const metadata: Metadata = {
   title: 'View Invoice',
@@ -34,6 +35,9 @@ export default async function InvoicePage({
   return (
     <main>
       {/* You can add your breadcrumb or heading here */}
+      <Breadcrumbs
+        breadcrumbs={[{ label: 'Invoice Detail', href: '/dashboard/invoices' }]}
+      />
       <InvoiceDetails invoice={invoice} patrons={patrons} />
     </main>
   );

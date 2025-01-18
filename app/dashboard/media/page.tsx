@@ -80,32 +80,6 @@ export default function MediaPage() {
     [cache, query]
   );
 
-  // useEffect(() => {
-  //   const fetchMedia = async () => {
-  //     setLoading(true);
-  //     try {
-  //       const allMedia = await listMedia();
-  //       const filteredMedia = allMedia.filter((media) => {
-  //         return media.mediaTitle.toLowerCase().includes(query.toLowerCase());
-  //       });
-  //       const itemsPerPage = 10;
-  //       const offset = (currentPage - 1) * itemsPerPage;
-  //       const paginatedMedia = filteredMedia.slice(
-  //         offset,
-  //         offset + itemsPerPage
-  //       );
-
-  //       setMedia(paginatedMedia);
-  //       setTotalPages(Math.ceil(filteredMedia.length / itemsPerPage));
-  //     } catch (err) {
-  //       console.error('Error fetching media:', err);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchMedia();
-  // }, [query, currentPage]);
-
   // Effect to fetch data when the page or query changes
   useEffect(() => {
     fetchMediaPage(currentPage);

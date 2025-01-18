@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Pagination from '@/app/ui/pagination';
 import Search from '@/app/ui/search';
 import Table from '@/app/ui/invoices/table';
 import { CreateInvoice } from '@/app/ui/invoices/buttons';
-import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
 import { lusitana } from '@/app/ui/fonts';
 import { Invoice } from '@/app/services/definitions';
 import { listInvoices } from '@/app/services/invoiceService';
@@ -19,25 +18,34 @@ export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [cache, setCache] = useState<Record<number, Invoice[]>>({});
 
-  useEffect(() => {
-    const fetchInvoices = async () => {
+  // Fetch invoices for a specific page
+  const fetchInvoicePage = useCallback(
+    async (page: number) => {
       setLoading(true);
       try {
+        if (cache[page]) {
+          // Use cached data if available
+          setInvoices(cache[page]);
+          setLoading(false);
+          return;
+        }
+
         const allInvoices = await listInvoices();
-        const filteredInvoices = allInvoices.filter((inv) => {
-          return (
-            inv.patronName.toLowerCase().includes(query.toLowerCase()) ||
-            inv.invoiceId.toString().includes(query)
-          );
-        });
-        const itemsPerPage = 7; // Adjust if needed
-        const offset = (currentPage - 1) * itemsPerPage;
+        const filteredInvoices = allInvoices.filter(
+          (invoices) =>
+            invoices.patronName.toLowerCase().includes(query.toLowerCase()) ||
+            invoices.invoiceId.toString().includes(query)
+        );
+        const itemsPerPage = 7;
+        const offset = (page - 1) * itemsPerPage;
         const paginatedInvoices = filteredInvoices.slice(
           offset,
           offset + itemsPerPage
         );
 
+        setCache((prev) => ({ ...prev, [page]: paginatedInvoices }));
         setInvoices(paginatedInvoices);
         setTotalPages(Math.ceil(filteredInvoices.length / itemsPerPage));
       } catch (err) {
@@ -45,10 +53,41 @@ export default function InvoicesPage() {
       } finally {
         setLoading(false);
       }
-    };
+    },
+    [cache, query]
+  );
 
-    fetchInvoices();
-  }, [query, currentPage]);
+  // Prefetch data for adjacent pages
+  const handlePrefetchPage = useCallback(
+    async (page: number) => {
+      if (cache[page]) return; // Skip if already cached
+
+      try {
+        const allInvoices = await listInvoices();
+        const filteredInvoices = allInvoices.filter(
+          (invoices) =>
+            invoices.patronName.toLowerCase().includes(query.toLowerCase()) ||
+            invoices.invoiceId.toString().includes(query)
+        );
+        const itemsPerPage = 7;
+        const offset = (page - 1) * itemsPerPage;
+        const paginatedInvoices = filteredInvoices.slice(
+          offset,
+          offset + itemsPerPage
+        );
+
+        setCache((prev) => ({ ...prev, [page]: paginatedInvoices }));
+      } catch (err) {
+        console.error('Error prefetching invoices:', err);
+      }
+    },
+    [cache, query]
+  );
+
+  // Effect to fetch data when the page or query changes
+  useEffect(() => {
+    fetchInvoicePage(currentPage);
+  }, [query, currentPage, fetchInvoicePage]);
 
   return (
     <div className='w-full'>
@@ -59,21 +98,24 @@ export default function InvoicesPage() {
         <Search placeholder='Search invoices...' />
         <CreateInvoice />
       </div>
-      {loading ? (
-        <InvoicesTableSkeleton />
-      ) : (
-        <>
-          <Table
-            query={query}
-            currentPage={currentPage}
-            invoices={invoices}
-            setInvoices={setInvoices}
+      <div
+        className={`relative transition-opacity duration-500 ${
+          loading ? 'opacity-50' : 'opacity-100'
+        }`}
+      >
+        <Table
+          query={query}
+          currentPage={currentPage}
+          invoices={invoices}
+          setInvoices={setInvoices}
+        />
+        <div className='mt-5 flex w-full justify-center'>
+          <Pagination
+            totalPages={totalPages}
+            onPrefetchPage={handlePrefetchPage}
           />
-          <div className='mt-5 flex w-full justify-center'>
-            <Pagination totalPages={totalPages} />
-          </div>
-        </>
-      )}
+        </div>
+      </div>
     </div>
   );
 }
