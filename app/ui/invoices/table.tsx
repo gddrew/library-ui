@@ -86,7 +86,7 @@ export default function InvoicesTable({ invoices }: InvoicesTableProps) {
             <tbody className='bg-white'>
               {invoices?.map((invoice) => (
                 <tr key={invoice.invoiceId} className='border-b text-sm'>
-                  <td className='truncate px-6 py-3'>
+                  <td className='px-6 py-3'>
                     <Link
                       href={`/dashboard/invoices/${invoice.invoiceId}`}
                       className='hover:text-blue-600'
