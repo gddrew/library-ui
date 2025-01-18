@@ -1,106 +1,97 @@
-import { lusitana } from '@/app/ui/fonts';
-import Search from '@/app/ui/search';
-import {
-  PatronsTableType,
-  FormattedPatronsTable,
-} from '@/app/services/definitions';
+import React from 'react';
+import { UpdatePatron } from '@/app/ui/patrons/buttons';
+//import PatronStatus from '@/app/ui/patrons/status';
+import { Patron } from '@/app/services/definitions';
+import { formatDateToLocal } from '@/app/services/utils';
 
-export default async function patronsTable({
-  patrons,
-}: {
-  patrons: FormattedPatronsTable[];
-}) {
+// Define the props for your Table
+type PatronTableProps = {
+  query: string;
+  currentPage: number;
+  patrons: Patron[];
+  setPatrons: React.Dispatch<React.SetStateAction<Patron[]>>;
+};
+
+export default function PatronTable({ patrons }: PatronTableProps) {
   return (
-    <div className='w-full'>
-      <h1 className={`${lusitana.className} mb-8 text-xl md:text-2xl`}>
-        patrons
-      </h1>
-      <Search placeholder='Search patrons...' />
-      <div className='mt-6 flow-root'>
-        <div className='overflow-x-auto'>
-          <div className='inline-block min-w-full align-middle'>
-            <div className='overflow-hidden rounded-md bg-gray-50 p-2 md:pt-0'>
-              <div className='md:hidden'>
-                {patrons?.map((patrons) => (
-                  <div
-                    key={patrons.patronId}
-                    className='mb-2 w-full rounded-md bg-white p-4'
-                  >
-                    <div className='flex items-center justify-between border-b pb-4'>
-                      <div>
-                        <div className='mb-2 flex items-center'>
-                          <div className='flex items-center gap-3'>
-                            <p>{patrons.patron_name}</p>
-                          </div>
-                        </div>
-                        <p className='text-sm text-gray-500'>
-                          {patrons.email_address}
-                        </p>
-                      </div>
+    <div className='overflow-x-auto mt-6 flow-root'>
+      <div className='inline-block min-w-full align-middle'>
+        <div className='rounded-lg bg-gray-50 p-2 md:pt-0'>
+          {/* Mobile version */}
+          <div className='md:hidden'>
+            {patrons?.map((patron) => (
+              <div
+                key={patron.patronId}
+                className='mb-2 w-full rounded-md bg-white p-4'
+              >
+                <div className='flex items-center justify-between border-b pb-4'>
+                  <div>
+                    <div className='mb-2 flex items-center'>
+                      <p>{patron.patronId}</p>
                     </div>
-                    <div className='flex w-full items-center justify-between border-b py-5'>
-                      <div className='flex w-1/2 flex-col'>
-                        <p className='text-xs'>Pending</p>
-                        <p className='font-medium'>{patrons.total_pending}</p>
-                      </div>
-                      <div className='flex w-1/2 flex-col'>
-                        <p className='text-xs'>Paid</p>
-                        <p className='font-medium'>{patrons.total_paid}</p>
-                      </div>
-                    </div>
-                    <div className='pt-4 text-sm'>
-                      <p>{patrons.total_invoices} invoices</p>
-                    </div>
+                    <p className='text-sm text-gray-500'>{patron.patronName}</p>
                   </div>
-                ))}
+                  {/* <PatronStatus status={patron.status} /> */}
+                </div>
+                <div className='flex w-full items-center justify-between pt-4'>
+                  <div>
+                    <p className='text-xl font-medium'>{patron.emailAddress}</p>
+                    <p className='text-xl font-medium'>
+                      {patron.telephoneHome}
+                    </p>
+                  </div>
+                  <div className='flex justify-end gap-2'>
+                    <UpdatePatron patronId={patron.patronId} />
+                  </div>
+                </div>
               </div>
-              <table className='hidden min-w-full rounded-md text-gray-900 md:table'>
-                <thead className='rounded-md bg-gray-50 text-left text-sm font-normal'>
-                  <tr>
-                    <th scope='col' className='px-4 py-5 font-medium sm:pl-6'>
-                      Name
-                    </th>
-                    <th scope='col' className='px-3 py-5 font-medium'>
-                      Email
-                    </th>
-                    <th scope='col' className='px-3 py-5 font-medium'>
-                      Total Invoices
-                    </th>
-                    <th scope='col' className='px-3 py-5 font-medium'>
-                      Total Pending
-                    </th>
-                    <th scope='col' className='px-4 py-5 font-medium'>
-                      Total Paid
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody className='divide-y divide-gray-200 text-gray-900'>
-                  {patrons.map((patrons) => (
-                    <tr key={patrons.patronId} className='group'>
-                      <td className='whitespace-nowrap bg-white py-5 pl-4 pr-3 text-sm text-black group-first-of-type:rounded-md group-last-of-type:rounded-md sm:pl-6'>
-                        <div className='flex items-center gap-3'>
-                          <p>{patrons.patron_name}</p>
-                        </div>
-                      </td>
-                      <td className='whitespace-nowrap bg-white px-4 py-5 text-sm'>
-                        {patrons.email_address}
-                      </td>
-                      <td className='whitespace-nowrap bg-white px-4 py-5 text-sm'>
-                        {patrons.total_invoices}
-                      </td>
-                      <td className='whitespace-nowrap bg-white px-4 py-5 text-sm'>
-                        {patrons.total_pending}
-                      </td>
-                      <td className='whitespace-nowrap bg-white px-4 py-5 text-sm group-first-of-type:rounded-md group-last-of-type:rounded-md'>
-                        {patrons.total_paid}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            ))}
           </div>
+          {/* Desktop version */}
+          <table className='table-fixed w-full text-gray-900'>
+            <thead className='rounded-lg text-left text-sm font-normal'>
+              <tr>
+                <th scope='col' className='w-24 px-4 py-3 font-medium sm:pl-6'>
+                  Patron ID
+                </th>
+                <th scope='col' className='w-60 px-4 py-3 font-medium sm:pl-6'>
+                  Name
+                </th>
+                <th scope='col' className='w-40 px-3 py-3 font-medium'>
+                  Email Address
+                </th>
+                <th scope='col' className='w-40 px-3 py-3 font-medium'>
+                  Telephone
+                </th>
+                <th scope='col' className='w-40 px-3 py-3 font-medium'>
+                  Status
+                </th>
+                <th scope='col' className='w-24 px-3 py-3 font-medium'>
+                  Member Since
+                </th>
+              </tr>
+            </thead>
+            <tbody className='bg-white'>
+              {patrons?.map((patron) => (
+                <tr key={patron.patronId} className='border-b text-sm'>
+                  <td className='truncate px-6 py-3'>{patron.patronId}</td>
+                  <td className='truncate px-6 py-3 overflow-hidden text-ellipsis whitespace-nowrap w-60'>
+                    {patron.patronName}
+                  </td>
+                  <td className='truncate px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap w-40'>
+                    {patron.emailAddress}
+                  </td>
+                  <td className='truncate px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap w-40'>
+                    {patron.telephoneHome}
+                  </td>
+                  <td className='truncate px-3 py-3'>{patron.status}</td>
+                  <td className='truncate px-3 py-3'>
+                    {formatDateToLocal(patron.created_date)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

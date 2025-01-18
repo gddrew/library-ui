@@ -119,6 +119,11 @@ export type PatronField = {
   patronName: string;
 };
 
+export type MediaField = {
+  mediaId: number;
+  mediaTitle: string;
+};
+
 export type InvoiceForm = {
   invoiceId: number;
   patronId: number;

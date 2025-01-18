@@ -3,7 +3,7 @@ import { listPatrons } from '@/app/services/patronService';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import InvoiceDetails from '@/app/ui/invoices/invoice-details';
-import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
+import Breadcrumbs from '@/app/ui/breadcrumbs';
 
 export const metadata: Metadata = {
   title: 'View Invoice',

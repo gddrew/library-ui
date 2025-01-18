@@ -1,5 +1,5 @@
 import Form from '@/app/ui/invoices/invoice-details';
-import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
+import Breadcrumbs from '@/app/ui/breadcrumbs';
 import { getInvoiceById } from '@/app/services/invoiceService';
 import { listPatrons } from '@/app/services/patronService';
 import { notFound } from 'next/navigation';
