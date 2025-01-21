@@ -46,7 +46,7 @@ export default function MediaTable({ media }: MediaTableProps) {
             ))}
           </div>
           {/* Desktop version */}
-          <table className='table-fixed w-full text-gray-900'>
+          <table className='hidden md:table table-fixed w-full text-gray-900'>
             <thead className='rounded-lg text-left text-sm font-normal'>
               <tr>
                 <th scope='col' className='w-24 px-4 py-3 font-medium sm:pl-6'>

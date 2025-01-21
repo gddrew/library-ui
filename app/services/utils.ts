@@ -14,6 +14,30 @@ export function formatISBN13(isbn: string | number): string {
   return `${prefix}-${group}-${publisher}-${title}-${checkDigit}`;
 }
 
+// Format telephone numbers for display
+export function formatTelephone(telephone: string): string {
+  // Strip out non-digit characters, just in case
+  const digits = telephone.replace(/\D/g, '');
+
+  // If exactly 10 digits, format (XXX) XXX-XXXX
+  if (digits.length === 10) {
+    const area = digits.slice(0, 3);
+    const middle = digits.slice(3, 6);
+    const last = digits.slice(6);
+    return `(${area}) ${middle}-${last}`;
+  }
+
+  // Otherwise, return unmodified or handle alternative lengths
+  return telephone;
+}
+
+// Format patron status
+export function capitalizeFirstLetter(str: string): string {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+// Format currency in US Dollars
 export const formatCurrency = (amount: number) => {
   return (amount / 100).toLocaleString('en-US', {
     style: 'currency',
@@ -21,12 +45,18 @@ export const formatCurrency = (amount: number) => {
   });
 };
 
+// Format dates to US standard MM/DD/YYYY
 export const formatDateToLocal = (
   dateStr: Date | string | undefined,
   locale: string = 'en-US'
-) => {
+): string => {
   if (!dateStr) {
     return 'N/A'; // Fallback for missing dates
+  }
+
+  // If dateStr is a string in YYYY-MM-DD with no "T", append a T
+  if (typeof dateStr === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    dateStr += 'T00:00:00'; // so "1980-04-28" becomes "1980-04-28T00:00:00"
   }
 
   const date = new Date(dateStr);

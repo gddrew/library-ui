@@ -18,7 +18,7 @@ export async function listPatrons(): Promise<Patron[]> {
       contactMethod: patron.contactMethod,
       emailAddress: patron.emailAddress,
       status: patron.status,
-      createdDate: patron.created_date,
+      created_date: patron.created_date,
       lastUpdateDate: patron.lastUpdateDate,
     }));
   } catch (error) {

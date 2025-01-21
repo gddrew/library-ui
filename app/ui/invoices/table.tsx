@@ -57,7 +57,7 @@ export default function InvoicesTable({ invoices }: InvoicesTableProps) {
           </div>
 
           {/* Desktop version */}
-          <table className='table-fixed w-full text-gray-900'>
+          <table className='hidden md:table table-fixed w-full text-gray-900'>
             <thead className='rounded-lg text-left text-sm font-normal'>
               <tr>
                 <th scope='col' className='w-24 px-4 py-5 font-medium sm:pl-6'>

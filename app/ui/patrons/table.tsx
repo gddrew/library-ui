@@ -1,6 +1,6 @@
 import React from 'react';
+import { formatTelephone, capitalizeFirstLetter } from '@/app/services/utils';
 import { UpdatePatron } from '@/app/ui/patrons/buttons';
-//import PatronStatus from '@/app/ui/patrons/status';
 import { Patron } from '@/app/services/definitions';
 import { formatDateToLocal } from '@/app/services/utils';
 
@@ -37,7 +37,9 @@ export default function PatronTable({ patrons }: PatronTableProps) {
                   <div>
                     <p className='text-xl font-medium'>{patron.emailAddress}</p>
                     <p className='text-xl font-medium'>
-                      {patron.telephoneHome}
+                      {patron.telephoneHome
+                        ? formatTelephone(patron.telephoneHome)
+                        : '--'}
                     </p>
                   </div>
                   <div className='flex justify-end gap-2'>
@@ -48,16 +50,16 @@ export default function PatronTable({ patrons }: PatronTableProps) {
             ))}
           </div>
           {/* Desktop version */}
-          <table className='table-fixed w-full text-gray-900'>
+          <table className='hidden md:table table-fixed w-full text-gray-900'>
             <thead className='rounded-lg text-left text-sm font-normal'>
               <tr>
                 <th scope='col' className='w-24 px-4 py-3 font-medium sm:pl-6'>
                   Patron ID
                 </th>
-                <th scope='col' className='w-60 px-4 py-3 font-medium sm:pl-6'>
+                <th scope='col' className='w-40 px-4 py-3 font-medium sm:pl-6'>
                   Name
                 </th>
-                <th scope='col' className='w-40 px-3 py-3 font-medium'>
+                <th scope='col' className='w-60 px-3 py-3 font-medium'>
                   Email Address
                 </th>
                 <th scope='col' className='w-40 px-3 py-3 font-medium'>
@@ -75,16 +77,22 @@ export default function PatronTable({ patrons }: PatronTableProps) {
               {patrons?.map((patron) => (
                 <tr key={patron.patronId} className='border-b text-sm'>
                   <td className='truncate px-6 py-3'>{patron.patronId}</td>
-                  <td className='truncate px-6 py-3 overflow-hidden text-ellipsis whitespace-nowrap w-60'>
+                  <td className='truncate px-6 py-3 overflow-hidden text-ellipsis whitespace-nowrap w-40'>
                     {patron.patronName}
                   </td>
-                  <td className='truncate px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap w-40'>
+                  <td className='truncate px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap w-60'>
                     {patron.emailAddress}
                   </td>
                   <td className='truncate px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap w-40'>
-                    {patron.telephoneHome}
+                    {patron.telephoneHome
+                      ? formatTelephone(patron.telephoneHome)
+                      : '--'}
                   </td>
-                  <td className='truncate px-3 py-3'>{patron.status}</td>
+                  <td className='truncate px-3 py-3'>
+                    {patron.status
+                      ? capitalizeFirstLetter(patron.status)
+                      : '--'}
+                  </td>
                   <td className='truncate px-3 py-3'>
                     {formatDateToLocal(patron.created_date)}
                   </td>
