@@ -1,26 +1,20 @@
 import apiClient from './apiClient';
-import {
-  CreateInvoicePayload,
-  Invoice,
-  InvoiceResponse,
-  PaginatedResponse,
-} from './definitions';
+import { CreateInvoicePayload, Invoice } from './definitions';
 
-// Fetch paginated and filtered invoices
-export async function listInvoices(
-  query: string,
-  page: number,
-  size: number = 7
-): Promise<PaginatedResponse<InvoiceResponse>> {
+// Fetch all invoices
+export async function listInvoices(): Promise<Invoice[]> {
   try {
-    const response = await apiClient.get(`/api/invoices`, {
-      params: {
-        query: query || undefined, // Send 'query' only if it's not empty
-        page,
-        size,
-      },
-    });
-    return response.data;
+    const response = await apiClient.get(`/api/reports/invoices-patrons`);
+    return response.data.map((invoice: Invoice) => ({
+      invoiceId: invoice.invoiceId,
+      amount: invoice.amount,
+      campaign: invoice.campaign,
+      patronId: invoice.patronId,
+      status: invoice.status,
+      date: invoice.date,
+      patronName: invoice.patronName,
+      emailAddress: invoice.emailAddress,
+    }));
   } catch (error) {
     console.error('Error fetching invoices:', error);
     throw error;
@@ -28,9 +22,7 @@ export async function listInvoices(
 }
 
 // Fetch a single invoice by ID
-export async function getInvoiceById(
-  invoiceId: number
-): Promise<InvoiceResponse> {
+export async function getInvoiceById(invoiceId: number) {
   try {
     const response = await apiClient.get(`/api/invoices/invoice/${invoiceId}`);
     return response.data;
@@ -43,13 +35,13 @@ export async function getInvoiceById(
 // Create a new invoice
 export async function createInvoice(
   invoiceData: CreateInvoicePayload
-): Promise<InvoiceResponse> {
+): Promise<Invoice> {
   try {
     const response = await apiClient.post(
       `/api/invoices/invoice/create`,
       invoiceData
     );
-    return response.data as InvoiceResponse;
+    return response.data as Invoice;
   } catch (error) {
     console.error('Error creating invoice:', error);
     throw error;
@@ -57,16 +49,13 @@ export async function createInvoice(
 }
 
 // Update an existing invoice
-export async function updateInvoice(
-  invoiceId: number,
-  invoiceData: Partial<Invoice>
-): Promise<InvoiceResponse> {
+export async function updateInvoice(invoiceId: number, invoiceData: Invoice) {
   try {
     const response = await apiClient.put(
       `/api/invoices/invoice/${invoiceId}`,
       invoiceData
     );
-    return response.data as InvoiceResponse;
+    return response.data;
   } catch (error) {
     console.error(`Error updating invoice with ID ${invoiceId}:`, error);
     throw error;
@@ -74,7 +63,7 @@ export async function updateInvoice(
 }
 
 // Delete an invoice
-export async function deleteInvoice(invoiceId: number): Promise<void> {
+export async function deleteInvoice(invoiceId: number) {
   try {
     await apiClient.delete(`/api/invoices/invoice/${invoiceId}`);
   } catch (error) {

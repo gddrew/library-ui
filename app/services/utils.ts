@@ -95,27 +95,54 @@ export const generateYAxis = (revenue: Revenue[]) => {
   return { yAxisLabels, topLabel };
 };
 
-export function generatePagination(
+export const generatePagination = (
   currentPage: number,
-  totalPages: number
-): Array<number | string> {
-  const pages: Array<number | string> = [];
-  const delta = 2;
+  totalPages: number,
+  onPrefetch?: (page: number) => void
+): (number | string)[] => {
+  const pages: (number | string)[] = [];
 
-  for (let i = 1; i <= totalPages; i++) {
-    if (
-      i === 1 ||
-      i === totalPages ||
-      (i >= currentPage - delta && i <= currentPage + delta)
-    ) {
-      pages.push(i);
-    } else if (
-      pages[pages.length - 1] !== '...' &&
-      i !== currentPage + delta + 1
-    ) {
-      pages.push('...');
+  // Prefetch helper
+  const prefetchPage = (page: number) => {
+    if (onPrefetch && page > 0 && page <= totalPages) {
+      onPrefetch(page);
     }
+  };
+
+  // If totalPages <= 7, show all pages without ellipsis
+  if (totalPages <= 7) {
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(i);
+      prefetchPage(i);
+    }
+    return pages;
   }
 
+  // If currentPage is among the first 3 pages
+  if (currentPage <= 3) {
+    pages.push(1, 2, 3, '...', totalPages - 1, totalPages);
+    prefetchPage(4); // Prefetch next page after the last visible
+    return pages;
+  }
+
+  // If currentPage is among the last 3 pages
+  if (currentPage >= totalPages - 2) {
+    pages.push(1, 2, '...', totalPages - 2, totalPages - 1, totalPages);
+    prefetchPage(totalPages - 3); // Prefetch page before the first visible
+    return pages;
+  }
+
+  // If currentPage is somewhere in the middle
+  pages.push(
+    1,
+    '...',
+    currentPage - 1,
+    currentPage,
+    currentPage + 1,
+    '...',
+    totalPages
+  );
+  prefetchPage(currentPage - 2); // Prefetch two pages before current
+  prefetchPage(currentPage + 2); // Prefetch two pages after current
   return pages;
-}
+};

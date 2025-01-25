@@ -58,26 +58,6 @@ export type Invoice = {
   status: 'pending' | 'paid';
 };
 
-export interface InvoiceResponse {
-  // Define the structure based on your backend's InvoiceResponse DTO
-  invoiceId: number;
-  amount: number;
-  campaign: string;
-  patronId: number;
-  status: string;
-  date: string;
-  patronName: string;
-  emailAddress: string;
-}
-
-export interface PaginatedResponse<T> {
-  content: T[];
-  currentPage: number;
-  totalPages: number;
-  totalElements: number;
-  isLast: boolean;
-}
-
 export type CreateInvoicePayload = Omit<
   Invoice,
   'invoiceId' | 'patronName' | 'emailAddress' | 'date'

@@ -2,13 +2,13 @@ import React from 'react';
 import Link from 'next/link';
 import InvoiceStatus from '@/app/ui/invoices/status';
 import { formatDateToLocal, formatCurrency } from '@/app/services/utils';
-import { InvoiceResponse } from '@/app/services/definitions';
+import { Invoice } from '@/app/services/definitions';
 
 // Define the props for your Table
 type InvoicesTableProps = {
   query: string;
   currentPage: number;
-  invoices: InvoiceResponse[];
+  invoices: Invoice[];
 };
 
 export default function InvoicesTable({ invoices }: InvoicesTableProps) {
