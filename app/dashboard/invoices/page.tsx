@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Pagination from '@/app/ui/pagination';
 import Search from '@/app/ui/search';
 import Table from '@/app/ui/invoices/table';
@@ -9,6 +9,7 @@ import { lusitana } from '@/app/ui/fonts';
 import { Invoice } from '@/app/services/definitions';
 import { listInvoices } from '@/app/services/invoiceService';
 import { useSearchParams } from 'next/navigation';
+import { useDebounce } from '@/app/lib/useDebounce';
 
 export default function InvoicesPage() {
   const searchParams = useSearchParams();
@@ -18,16 +19,18 @@ export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [cache, setCache] = useState<Record<number, Invoice[]>>({});
+  const cacheRef = useRef<Record<string, Record<number, Invoice[]>>>({});
+
+  // Debounce the query input by 300ms
+  const debouncedQuery = useDebounce(query, 300);
 
   // Fetch invoices for a specific page
   const fetchInvoicePage = useCallback(
-    async (page: number) => {
+    async (page: number, searchQuery: string) => {
       setLoading(true);
       try {
-        if (cache[page]) {
-          // Use cached data if available
-          setInvoices(cache[page]);
+        if (cacheRef.current[searchQuery]?.[page]) {
+          setInvoices(cacheRef.current[searchQuery][page]);
           setLoading(false);
           return;
         }
@@ -35,8 +38,10 @@ export default function InvoicesPage() {
         const allInvoices = await listInvoices();
         const filteredInvoices = allInvoices.filter(
           (invoices) =>
-            invoices.patronName.toLowerCase().includes(query.toLowerCase()) ||
-            invoices.invoiceId.toString().includes(query)
+            invoices.patronName
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            invoices.invoiceId.toString().includes(searchQuery)
         );
         const itemsPerPage = 7;
         const offset = (page - 1) * itemsPerPage;
@@ -45,7 +50,14 @@ export default function InvoicesPage() {
           offset + itemsPerPage
         );
 
-        setCache((prev) => ({ ...prev, [page]: paginatedInvoices }));
+        cacheRef.current = {
+          ...cacheRef.current,
+          [searchQuery]: {
+            ...(cacheRef.current[searchQuery] || {}),
+            [page]: paginatedInvoices,
+          },
+        };
+
         setInvoices(paginatedInvoices);
         setTotalPages(Math.ceil(filteredInvoices.length / itemsPerPage));
       } catch (err) {
@@ -54,20 +66,22 @@ export default function InvoicesPage() {
         setLoading(false);
       }
     },
-    [cache, query]
+    []
   );
 
   // Prefetch data for adjacent pages
   const handlePrefetchPage = useCallback(
     async (page: number) => {
-      if (cache[page]) return; // Skip if already cached
+      if (cacheRef.current[debouncedQuery]?.[page]) return;
 
       try {
         const allInvoices = await listInvoices();
         const filteredInvoices = allInvoices.filter(
           (invoices) =>
-            invoices.patronName.toLowerCase().includes(query.toLowerCase()) ||
-            invoices.invoiceId.toString().includes(query)
+            invoices.patronName
+              .toLowerCase()
+              .includes(debouncedQuery.toLowerCase()) ||
+            invoices.invoiceId.toString().includes(debouncedQuery)
         );
         const itemsPerPage = 7;
         const offset = (page - 1) * itemsPerPage;
@@ -76,18 +90,24 @@ export default function InvoicesPage() {
           offset + itemsPerPage
         );
 
-        setCache((prev) => ({ ...prev, [page]: paginatedInvoices }));
+        cacheRef.current = {
+          ...cacheRef.current,
+          [debouncedQuery]: {
+            ...(cacheRef.current[debouncedQuery] || {}),
+            [page]: paginatedInvoices,
+          },
+        };
       } catch (err) {
         console.error('Error prefetching invoices:', err);
       }
     },
-    [cache, query]
+    [debouncedQuery]
   );
 
   // Effect to fetch data when the page or query changes
   useEffect(() => {
-    fetchInvoicePage(currentPage);
-  }, [query, currentPage, fetchInvoicePage]);
+    fetchInvoicePage(currentPage, debouncedQuery);
+  }, [debouncedQuery, currentPage, fetchInvoicePage]);
 
   return (
     <div className='w-full'>
@@ -104,10 +124,9 @@ export default function InvoicesPage() {
         }`}
       >
         <Table
-          query={query}
+          query={debouncedQuery}
           currentPage={currentPage}
           invoices={invoices}
-          setInvoices={setInvoices}
         />
         <div className='mt-5 flex w-full justify-center'>
           <Pagination

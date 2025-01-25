@@ -9,7 +9,6 @@ type InvoicesTableProps = {
   query: string;
   currentPage: number;
   invoices: Invoice[];
-  setInvoices: React.Dispatch<React.SetStateAction<Invoice[]>>;
 };
 
 export default function InvoicesTable({ invoices }: InvoicesTableProps) {
