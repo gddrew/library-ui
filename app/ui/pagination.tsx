@@ -8,22 +8,21 @@ import { usePathname, useSearchParams } from 'next/navigation';
 
 export default function Pagination({
   totalPages,
-  onPrefetchPage = () => {}, // Default to no-op
+  currentPage,
 }: {
   totalPages: number;
-  onPrefetchPage?: (page: number) => void; // Optional callback for prefetching
+  currentPage: number;
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const currentPage = Number(searchParams.get('page')) || 1;
 
   const createPageURL = (pageNumber: number | string) => {
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams(searchParams.toString());
     params.set('page', pageNumber.toString());
     return `${pathname}?${params.toString()}`;
   };
 
-  const allPages = generatePagination(currentPage, totalPages, onPrefetchPage);
+  const allPages = generatePagination(currentPage, totalPages);
 
   return (
     <div className='inline-flex'>
@@ -49,9 +48,6 @@ export default function Pagination({
               page={page}
               position={position}
               isActive={currentPage === page}
-              onPrefetch={() =>
-                typeof page === 'number' && onPrefetchPage(page)
-              } // Trigger prefetch
             />
           );
         })}
@@ -71,13 +67,11 @@ function PaginationNumber({
   href,
   isActive,
   position,
-  onPrefetch,
 }: {
   page: number | string;
   href: string;
   position?: 'first' | 'last' | 'middle' | 'single';
   isActive: boolean;
-  onPrefetch: () => void;
 }) {
   const className = clsx(
     'flex h-10 w-10 items-center justify-center text-sm border',
@@ -93,11 +87,7 @@ function PaginationNumber({
   return isActive || position === 'middle' ? (
     <div className={className}>{page}</div>
   ) : (
-    <Link
-      href={href}
-      className={className}
-      onMouseEnter={onPrefetch} // Prefetch on hover
-    >
+    <Link href={href} className={className}>
       {page}
     </Link>
   );
