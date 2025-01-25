@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { lusitana } from '@/app/ui/fonts';
-import Search from '@/app/ui/search';
-import { CreateMedia } from '@/app/ui/media/buttons';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Pagination from '@/app/ui/pagination';
+import Search from '@/app/ui/search';
 import Table from '@/app/ui/media/table';
+import { CreateMedia } from '@/app/ui/media/buttons';
+import { lusitana } from '@/app/ui/fonts';
 import { Media } from '@/app/services/definitions';
 import { listMedia } from '@/app/services/mediaService';
+import { useSearchParams } from 'next/navigation';
+import { useDebounce } from '@/app/lib/useDebounce';
 
 export default function MediaPage() {
   const searchParams = useSearchParams();
@@ -18,23 +19,28 @@ export default function MediaPage() {
   const [media, setMedia] = useState<Media[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [cache, setCache] = useState<Record<number, Media[]>>({});
+  const cacheRef = useRef<Record<string, Record<number, Media[]>>>({});
+
+  // Debounce the query input by 300ms
+  const debouncedQuery = useDebounce(query, 300);
 
   // Fetch media for a specific page
   const fetchMediaPage = useCallback(
-    async (page: number) => {
+    async (page: number, searchQuery: string) => {
       setLoading(true);
       try {
-        if (cache[page]) {
+        if (cacheRef.current[searchQuery]?.[page]) {
           // Use cached data if available
-          setMedia(cache[page]);
+          setMedia(cacheRef.current[searchQuery][page]);
           setLoading(false);
           return;
         }
 
         const allMedia = await listMedia();
-        const filteredMedia = allMedia.filter((media) =>
-          media.mediaTitle.toLowerCase().includes(query.toLowerCase())
+        const filteredMedia = allMedia.filter(
+          (media) =>
+            media.mediaTitle.toLowerCase().includes(query.toLowerCase()) ||
+            media.mediaId.toString().includes(searchQuery)
         );
         const itemsPerPage = 10;
         const offset = (page - 1) * itemsPerPage;
@@ -43,7 +49,14 @@ export default function MediaPage() {
           offset + itemsPerPage
         );
 
-        setCache((prev) => ({ ...prev, [page]: paginatedMedia }));
+        cacheRef.current = {
+          ...cacheRef.current,
+          [searchQuery]: {
+            ...(cacheRef.current[searchQuery] || {}),
+            [page]: paginatedMedia,
+          },
+        };
+
         setMedia(paginatedMedia);
         setTotalPages(Math.ceil(filteredMedia.length / itemsPerPage));
       } catch (err) {
@@ -52,18 +65,20 @@ export default function MediaPage() {
         setLoading(false);
       }
     },
-    [cache, query]
+    [query]
   );
 
   // Prefetch data for adjacent pages
   const handlePrefetchPage = useCallback(
     async (page: number) => {
-      if (cache[page]) return; // Skip if already cached
+      if (cacheRef.current[debouncedQuery]?.[page]) return;
 
       try {
         const allMedia = await listMedia();
-        const filteredMedia = allMedia.filter((media) =>
-          media.mediaTitle.toLowerCase().includes(query.toLowerCase())
+        const filteredMedia = allMedia.filter(
+          (media) =>
+            media.mediaTitle.toLowerCase().includes(query.toLowerCase()) ||
+            media.mediaId.toString().includes(debouncedQuery)
         );
         const itemsPerPage = 10;
         const offset = (page - 1) * itemsPerPage;
@@ -72,18 +87,24 @@ export default function MediaPage() {
           offset + itemsPerPage
         );
 
-        setCache((prev) => ({ ...prev, [page]: paginatedMedia }));
+        cacheRef.current = {
+          ...cacheRef.current,
+          [debouncedQuery]: {
+            ...(cacheRef.current[debouncedQuery] || {}),
+            [page]: paginatedMedia,
+          },
+        };
       } catch (err) {
         console.error('Error prefetching media:', err);
       }
     },
-    [cache, query]
+    [debouncedQuery, query]
   );
 
   // Effect to fetch data when the page or query changes
   useEffect(() => {
-    fetchMediaPage(currentPage);
-  }, [query, currentPage, fetchMediaPage]);
+    fetchMediaPage(currentPage, debouncedQuery);
+  }, [debouncedQuery, currentPage, fetchMediaPage]);
 
   return (
     <div className='w-full'>
@@ -99,12 +120,7 @@ export default function MediaPage() {
           loading ? 'opacity-50' : 'opacity-100'
         }`}
       >
-        <Table
-          query={query}
-          currentPage={currentPage}
-          media={media}
-          setMedia={setMedia}
-        />
+        <Table query={debouncedQuery} currentPage={currentPage} media={media} />
         <div className='mt-5 flex w-full justify-center'>
           <Pagination
             totalPages={totalPages}

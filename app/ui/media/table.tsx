@@ -9,7 +9,6 @@ type MediaTableProps = {
   query: string;
   currentPage: number;
   media: Media[];
-  setMedia: React.Dispatch<React.SetStateAction<Media[]>>;
 };
 
 export default function MediaTable({ media }: MediaTableProps) {
