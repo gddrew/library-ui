@@ -56,87 +56,37 @@ export default function Form({}: { media: MediaField[] }) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className='rounded-md bg-gray-50 p-4 md:p-6'>
+    <form
+      onSubmit={handleSubmit}
+      className='max-w-4xl ml bg-gray-50 p-6 rounded-md'
+    >
+      <h2 className='text-xl font-semibold mb-4'>General Information</h2>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
         {/* Media Title */}
-        <div className='mb-4'>
-          <label
-            htmlFor='mediaTitle'
-            className='mb-2 block text-sm font-medium'
-          >
+        <div className='flex flex-col'>
+          <label htmlFor='mediaTitle' className='text-sm font-medium mb-1'>
             Media Title
           </label>
           <input
             type='text'
             id='mediaTitle'
             name='mediaTitle'
-            className='peer block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500'
-            placeholder='Enter media title'
             required
-          />
-        </div>
-
-        {/* Author */}
-        <div className='mb-4'>
-          <label htmlFor='author' className='mb-2 block text-sm font-medium'>
-            Author
-          </label>
-          <input
-            type='text'
-            id='author'
-            name='author'
-            className='peer block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500'
-            placeholder='Enter author name'
-            required
-          />
-        </div>
-
-        {/* ISBN */}
-        <div className='mb-4'>
-          <label htmlFor='isbn' className='mb-2 block text-sm font-medium'>
-            ISBN
-          </label>
-          <input
-            type='text'
-            id='isbn'
-            name='isbn'
-            className='peer block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500'
-            placeholder='Enter ISBN'
-            required
-          />
-        </div>
-
-        {/* Publication Year */}
-        <div className='mb-4'>
-          <label
-            htmlFor='publicationYear'
-            className='mb-2 block text-sm font-medium'
-          >
-            Publication Year
-          </label>
-          <input
-            type='number'
-            id='publicationYear'
-            name='publicationYear'
-            className='peer block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500'
-            placeholder='YYYY'
-            required
-            min='0'
-            max='9999'
+            className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm placeholder-gray-500'
           />
         </div>
 
         {/* Media Type */}
-        <div className='mb-4'>
-          <label htmlFor='mediaType' className='mb-2 block text-sm font-medium'>
+        <div className='flex flex-col'>
+          <label htmlFor='mediaType' className='text-sm font-medium mb-1'>
             Media Type
           </label>
           <select
             id='mediaType'
             name='mediaType'
-            className='peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 px-3 text-sm outline-2'
             defaultValue='Book'
             onChange={(e) => setMediaType(e.target.value)}
+            className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
           >
             <option value='Book'>Book</option>
             <option value='Video'>Video</option>
@@ -144,24 +94,117 @@ export default function Form({}: { media: MediaField[] }) {
           </select>
         </div>
 
+        {/* Acquisition Date */}
+        <div className='flex flex-col w-full'>
+          <label htmlFor='acquisitionDate' className='text-sm font-medium mb-1'>
+            Date Acquired
+          </label>
+          <input
+            type='date'
+            id='acquisitionDate'
+            name='acquisitionDate'
+            className='peer block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2'
+            required
+          />
+        </div>
+
+        {/* Sensitive */}
+        <div className='flex flex-col justify-end'>
+          <label htmlFor='sensitive' className='text-sm font-medium mb-auto'>
+            Sensitive Content
+          </label>
+          <input
+            type='checkbox'
+            id='sensitive'
+            name='sensitive'
+            className='h-4 w-4 cursor-pointer border-gray-300'
+          />
+        </div>
+      </div>
+
+      <h2 className='text-xl font-semibold mt-6 mb-4'>Book Information</h2>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
+        {/* Publisher Name */}
+        <div className='flex flex-col'>
+          <label htmlFor='publisherName' className='text-sm font-medium mb-1'>
+            Publisher
+          </label>
+          <input
+            type='text'
+            id='publisherName'
+            name='publisherName'
+            required
+            className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+          />
+        </div>
+
+        {/* ISBN */}
+        <div className='flex flex-col'>
+          <label htmlFor='isbn' className='text-sm font-medium mb-1'>
+            ISBN
+          </label>
+          <input
+            type='text'
+            id='isbn'
+            name='isbn'
+            required
+            className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+          />
+        </div>
+
+        {/* Author */}
+        <div className='flex flex-col'>
+          <label htmlFor='author' className='text-sm font-medium mb-1'>
+            Author
+          </label>
+          <input
+            type='text'
+            id='author'
+            name='author'
+            required
+            className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+          />
+        </div>
+
+        {/* Number of Page */}
+        <div className='flex flex-col'>
+          <label htmlFor='numberPages' className='text-sm font-medium mb-1'>
+            Number of Pages
+          </label>
+          <input
+            type='number'
+            id='numberPages'
+            name='numberPages'
+            required
+            className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+          />
+        </div>
+
+        {/* Publication Year */}
+        <div className='flex flex-col'>
+          <label htmlFor='publicationYear' className='text-sm font-medium mb-1'>
+            Publication Year
+          </label>
+          <input
+            type='number'
+            id='publicationYear'
+            name='publicationYear'
+            required
+            className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm placeholder-gray-500'
+          />
+        </div>
+
         {/* Media Format */}
-        <div className='mb-4'>
-          <label
-            htmlFor='mediaFormat'
-            className='mb-2 block text-sm font-medium'
-          >
-            Media Format
+        <div className='flex flex-col'>
+          <label htmlFor='mediaFormat' className='text-sm font-medium mb-1'>
+            Format
           </label>
           <select
             id='mediaFormat'
             name='mediaFormat'
-            className='peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 px-3 text-sm outline-2'
-            defaultValue=''
+            className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
             required
           >
-            <option value='' disabled>
-              Select a format
-            </option>
             {mediaType === 'Book' && (
               <>
                 <option value='hardcover'>Hardcover</option>
@@ -171,8 +214,6 @@ export default function Form({}: { media: MediaField[] }) {
             {mediaType === 'Video' && (
               <>
                 <option value='DVD'>DVD</option>
-                <option value='Blue-ray'>Blue-ray</option>
-                <option value='VHS'>VHS</option>
                 <option value='Streaming'>Streaming</option>
               </>
             )}
@@ -180,35 +221,13 @@ export default function Form({}: { media: MediaField[] }) {
               <>
                 <option value='CD'>CD</option>
                 <option value='MP3'>MP3</option>
-                <option value='Vinyl Record'>Vinyl Record</option>
-                <option value='Cassette'>Cassette</option>
               </>
             )}
           </select>
         </div>
 
-        {/* Number Pages */}
-        <div className='mb-4'>
-          <label
-            htmlFor='numberPage'
-            className='mb-2 block text-sm font-medium'
-          >
-            Number of Pages
-          </label>
-          <input
-            type='number'
-            id='numberPage'
-            name='numberPage'
-            className='peer block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500'
-            placeholder='Enter number of pages'
-            required
-            min='1'
-            max='9999'
-          />
-        </div>
-
         {/* Classification Category */}
-        <div className='mb-4'>
+        <div className='flex flex-col'>
           <label
             htmlFor='classificationCategory'
             className='mb-2 block text-sm font-medium'
@@ -231,7 +250,7 @@ export default function Form({}: { media: MediaField[] }) {
         </div>
 
         {/* Classification Sub-category */}
-        <div className='mb-4'>
+        <div className='flex flex-col'>
           <label
             htmlFor='classificationSubcategory'
             className='mb-2 block text-sm font-medium'
@@ -258,87 +277,19 @@ export default function Form({}: { media: MediaField[] }) {
             <option value='Technical'>Technical</option>
           </select>
         </div>
-
-        {/* Publisher Name */}
-        <div className='mb-4'>
-          <label
-            htmlFor='publisherName'
-            className='mb-2 block text-sm font-medium'
-          >
-            Publisher Name
-          </label>
-          <input
-            type='text'
-            id='publisherName'
-            name='publisherName'
-            className='peer block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500'
-            placeholder='Enter publisher name'
-            required
-          />
-        </div>
-
-        {/* Acquisition Date*/}
-        <div className='mb-4'>
-          <label
-            htmlFor='acquisitionDate'
-            className='mb-2 block text-sm font-medium'
-          >
-            Acquisition Date
-          </label>
-          <input
-            type='date'
-            id='acquisitionDate'
-            name='acquisitionDate'
-            className='peer block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2'
-            required
-          />
-        </div>
-
-        {/* Disposal Disposition */}
-        <div className='mb-4'>
-          <label
-            htmlFor='disposalDisposition'
-            className='mb-2 block text-sm font-medium'
-          >
-            Disposal Disposition
-          </label>
-          <select
-            id='disposalDisposition'
-            name='disposalDisposition'
-            className='peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 px-3 text-sm outline-2'
-            defaultValue=''
-            required
-          >
-            <option value='' disabled>
-              Select an option
-            </option>
-            <option value='Art school library'>Art school library</option>
-            <option value='Sell or donate'>Sell or donate</option>
-          </select>
-        </div>
-
-        {/* Sensitive */}
-        <div className='mb-4 flex items-center'>
-          <input
-            type='checkbox'
-            id='sensitive'
-            name='sensitive'
-            className='h-4 w-4 cursor-pointer border-gray-300'
-          />
-          <label htmlFor='sensitive' className='ml-2 block text-sm font-medium'>
-            Sensitive
-          </label>
-        </div>
       </div>
 
-      <div className='mt-6 flex justify-end gap-4'>
+      {/* Buttons */}
+      <div className='flex justify-end gap-4 mt-6'>
         <Link
           href='/dashboard/media'
           className='flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200'
         >
           Cancel
         </Link>
-        <Button type='submit'>Save</Button>
+        <Button type='submit' className='btn btn-primary'>
+          Save
+        </Button>
       </div>
     </form>
   );
