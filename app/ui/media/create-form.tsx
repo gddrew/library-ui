@@ -13,42 +13,28 @@ export default function Form({}: { media: MediaField[] }) {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-
     const formData = new FormData(e.currentTarget);
-    const mediaTitle = formData.get('mediaTitle') as string;
-    const authorName = formData.get('author') as string;
-    const isbnId = formData.get('isbn') as string;
-    const publicationYear = formData.get('publicationYear') as string;
-    const mediaTypeValue = formData.get('mediaType') as string;
-    const mediaFormat = formData.get('mediaFormat') as string;
-    const numberPages = formData.get('numberPages') as string;
-    const classificationCategory = formData.get(
-      'classificationCategory'
-    ) as string;
-    const classificationSubCategory = formData.get(
-      'classificationSubCategory'
-    ) as string;
-    const publisherName = formData.get('publisherName') as string;
-    const acquisitionDate = formData.get('acquisitionDate') as unknown as Date;
-    const disposalDisposition = formData.get('disposalDisposition') as string;
-    const isSensitive = formData.get('isSensitive') ? true : false;
+
+    const mediaData = {
+      mediaTitle: formData.get('mediaTitle') as string,
+      authorName: formData.get('author') as string,
+      isbnId: formData.get('isbn') as string,
+      publicationYear: formData.get('publicationYear') as string,
+      mediaType: formData.get('mediaType') as string,
+      mediaFormat: formData.get('mediaFormat') as string,
+      numberPages: parseInt(formData.get('numberPages') as string, 10),
+      classificationCategory: formData.get('classificationCategory') as string,
+      classificationSubCategory: formData.get(
+        'classificationSubCategory'
+      ) as string,
+      publisherName: formData.get('publisherName') as string,
+      acquisitionDate: formData.get('acquisitionDate') as unknown as Date,
+      disposalDisposition: formData.get('disposalDisposition') as string,
+      isSensitive: formData.get('isSensitive') ? true : false,
+    };
 
     try {
-      await addMedia({
-        mediaTitle,
-        authorName,
-        isbnId,
-        publicationYear,
-        mediaType: mediaTypeValue,
-        mediaFormat,
-        numberPages: parseInt(numberPages, 10),
-        classificationCategory,
-        classificationSubCategory,
-        publisherName,
-        acquisitionDate,
-        disposalDisposition,
-        isSensitive,
-      });
+      await addMedia(mediaData);
       router.push('/dashboard/media');
     } catch (err) {
       console.error('Failed to create media', err);
@@ -56,87 +42,47 @@ export default function Form({}: { media: MediaField[] }) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className='rounded-md bg-gray-50 p-4 md:p-6'>
+    <form
+      onSubmit={handleSubmit}
+      className='max-w-4xl mx-auto bg-gray-50 p-6 rounded-md'
+    >
+      <h2 className='text-xl font-semibold mb-4'>General Information</h2>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         {/* Media Title */}
-        <div className='mb-4'>
-          <label
-            htmlFor='mediaTitle'
-            className='mb-2 block text-sm font-medium'
-          >
-            Media Title
-          </label>
+        <div>
+          <label htmlFor='mediaTitle'>Media Title</label>
           <input
             type='text'
             id='mediaTitle'
             name='mediaTitle'
-            className='peer block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500'
-            placeholder='Enter media title'
             required
-          />
-        </div>
-
-        {/* Author */}
-        <div className='mb-4'>
-          <label htmlFor='author' className='mb-2 block text-sm font-medium'>
-            Author
-          </label>
-          <input
-            type='text'
-            id='author'
-            name='author'
-            className='peer block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500'
-            placeholder='Enter author name'
-            required
-          />
-        </div>
-
-        {/* ISBN */}
-        <div className='mb-4'>
-          <label htmlFor='isbn' className='mb-2 block text-sm font-medium'>
-            ISBN
-          </label>
-          <input
-            type='text'
-            id='isbn'
-            name='isbn'
-            className='peer block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500'
-            placeholder='Enter ISBN'
-            required
+            className='input'
           />
         </div>
 
         {/* Publication Year */}
-        <div className='mb-4'>
-          <label
-            htmlFor='publicationYear'
-            className='mb-2 block text-sm font-medium'
-          >
-            Publication Year
-          </label>
+        <div>
+          <label htmlFor='publicationYear'>Year</label>
           <input
             type='number'
             id='publicationYear'
             name='publicationYear'
-            className='peer block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500'
-            placeholder='YYYY'
             required
-            min='0'
-            max='9999'
+            className='input'
           />
         </div>
+      </div>
 
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-4'>
         {/* Media Type */}
-        <div className='mb-4'>
-          <label htmlFor='mediaType' className='mb-2 block text-sm font-medium'>
-            Media Type
-          </label>
+        <div>
+          <label htmlFor='mediaType'>Media Type</label>
           <select
             id='mediaType'
             name='mediaType'
-            className='peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 px-3 text-sm outline-2'
             defaultValue='Book'
             onChange={(e) => setMediaType(e.target.value)}
+            className='input'
           >
             <option value='Book'>Book</option>
             <option value='Video'>Video</option>
@@ -145,23 +91,14 @@ export default function Form({}: { media: MediaField[] }) {
         </div>
 
         {/* Media Format */}
-        <div className='mb-4'>
-          <label
-            htmlFor='mediaFormat'
-            className='mb-2 block text-sm font-medium'
-          >
-            Media Format
-          </label>
+        <div>
+          <label htmlFor='mediaFormat'>Format</label>
           <select
             id='mediaFormat'
             name='mediaFormat'
-            className='peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 px-3 text-sm outline-2'
-            defaultValue=''
+            className='input'
             required
           >
-            <option value='' disabled>
-              Select a format
-            </option>
             {mediaType === 'Book' && (
               <>
                 <option value='hardcover'>Hardcover</option>
@@ -171,8 +108,6 @@ export default function Form({}: { media: MediaField[] }) {
             {mediaType === 'Video' && (
               <>
                 <option value='DVD'>DVD</option>
-                <option value='Blue-ray'>Blue-ray</option>
-                <option value='VHS'>VHS</option>
                 <option value='Streaming'>Streaming</option>
               </>
             )}
@@ -180,165 +115,58 @@ export default function Form({}: { media: MediaField[] }) {
               <>
                 <option value='CD'>CD</option>
                 <option value='MP3'>MP3</option>
-                <option value='Vinyl Record'>Vinyl Record</option>
-                <option value='Cassette'>Cassette</option>
               </>
             )}
           </select>
         </div>
+      </div>
 
-        {/* Number Pages */}
-        <div className='mb-4'>
-          <label
-            htmlFor='numberPage'
-            className='mb-2 block text-sm font-medium'
-          >
-            Number of Pages
-          </label>
-          <input
-            type='number'
-            id='numberPage'
-            name='numberPage'
-            className='peer block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500'
-            placeholder='Enter number of pages'
-            required
-            min='1'
-            max='9999'
-          />
-        </div>
-
-        {/* Classification Category */}
-        <div className='mb-4'>
-          <label
-            htmlFor='classificationCategory'
-            className='mb-2 block text-sm font-medium'
-          >
-            Classification Category
-          </label>
-          <select
-            id='classificationCategory'
-            name='classificationCategory'
-            className='peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 px-3 text-sm outline-2'
-            defaultValue=''
-            required
-          >
-            <option value='' disabled>
-              Select a category
-            </option>
-            <option value='Fiction'>Fiction</option>
-            <option value='Non-Fiction'>Non-Fiction</option>
-          </select>
-        </div>
-
-        {/* Classification Sub-category */}
-        <div className='mb-4'>
-          <label
-            htmlFor='classificationSubcategory'
-            className='mb-2 block text-sm font-medium'
-          >
-            Classification Sub-category
-          </label>
-          <select
-            id='classificationSubcategory'
-            name='classificationSubcategory'
-            className='peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 px-3 text-sm outline-2'
-            defaultValue=''
-            required
-          >
-            <option value='' disabled>
-              Select a sub-category
-            </option>
-            <option value='Architecture'>Architecture</option>
-            <option value='Art/Art History'>Art/Art History</option>
-            <option value='Biography'>Biography</option>
-            <option value='Communications'>Communications</option>
-            <option value='History'>History</option>
-            <option value='Management'>Management</option>
-            <option value='Self-help'>Self-help</option>
-            <option value='Technical'>Technical</option>
-          </select>
-        </div>
-
-        {/* Publisher Name */}
-        <div className='mb-4'>
-          <label
-            htmlFor='publisherName'
-            className='mb-2 block text-sm font-medium'
-          >
-            Publisher Name
-          </label>
+      <h2 className='text-xl font-semibold mt-6 mb-4'>Book Information</h2>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+        <div>
+          <label htmlFor='publisherName'>Publisher</label>
           <input
             type='text'
             id='publisherName'
             name='publisherName'
-            className='peer block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500'
-            placeholder='Enter publisher name'
             required
+            className='input'
           />
         </div>
-
-        {/* Acquisition Date*/}
-        <div className='mb-4'>
-          <label
-            htmlFor='acquisitionDate'
-            className='mb-2 block text-sm font-medium'
-          >
-            Acquisition Date
-          </label>
+        <div>
+          <label htmlFor='isbn'>ISBN</label>
+          <input type='text' id='isbn' name='isbn' required className='input' />
+        </div>
+        <div>
+          <label htmlFor='author'>Author</label>
           <input
-            type='date'
-            id='acquisitionDate'
-            name='acquisitionDate'
-            className='peer block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2'
+            type='text'
+            id='author'
+            name='author'
             required
+            className='input'
           />
         </div>
-
-        {/* Disposal Disposition */}
-        <div className='mb-4'>
-          <label
-            htmlFor='disposalDisposition'
-            className='mb-2 block text-sm font-medium'
-          >
-            Disposal Disposition
-          </label>
-          <select
-            id='disposalDisposition'
-            name='disposalDisposition'
-            className='peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 px-3 text-sm outline-2'
-            defaultValue=''
-            required
-          >
-            <option value='' disabled>
-              Select an option
-            </option>
-            <option value='Art school library'>Art school library</option>
-            <option value='Sell or donate'>Sell or donate</option>
-          </select>
-        </div>
-
-        {/* Sensitive */}
-        <div className='mb-4 flex items-center'>
+        <div>
+          <label htmlFor='numberPages'>Pages</label>
           <input
-            type='checkbox'
-            id='sensitive'
-            name='sensitive'
-            className='h-4 w-4 cursor-pointer border-gray-300'
+            type='number'
+            id='numberPages'
+            name='numberPages'
+            required
+            className='input'
           />
-          <label htmlFor='sensitive' className='ml-2 block text-sm font-medium'>
-            Sensitive
-          </label>
         </div>
       </div>
 
-      <div className='mt-6 flex justify-end gap-4'>
-        <Link
-          href='/dashboard/media'
-          className='flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200'
-        >
+      {/* Buttons */}
+      <div className='flex justify-end gap-4 mt-6'>
+        <Link href='/dashboard/media' className='btn btn-secondary'>
           Cancel
         </Link>
-        <Button type='submit'>Save</Button>
+        <Button type='submit' className='btn btn-primary'>
+          Save
+        </Button>
       </div>
     </form>
   );
