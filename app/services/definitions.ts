@@ -65,7 +65,7 @@ export type CreateInvoicePayload = Omit<
 
 export type CreateMediaPayload = Omit<
   Media,
-  'mediaId' | 'mediaTitle' | 'authorName'
+  'mediaId' | 'created_date' | 'barCodeId' | 'lastUpdateDate' | 'status'
 >;
 
 export type Revenue = {
