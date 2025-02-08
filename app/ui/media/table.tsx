@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { UpdateMedia } from '@/app/ui/media/buttons';
 import MediaStatus from '@/app/ui/media/status';
 import { Media } from '@/app/services/definitions';
@@ -40,10 +41,19 @@ export default function MediaTable({ media }: MediaTableProps) {
                   <div className='flex justify-end gap-2'>
                     <UpdateMedia mediaId={media.mediaId} />
                   </div>
+                  <div className='flex justify-end gap-2'>
+                    <Link
+                      href={`/dashboard/media/${media.mediaId}`}
+                      className='inline-flex items-center gap-1 rounded-md border px-3 py-1 hover:bg-gray-100'
+                    >
+                      View
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
+
           {/* Desktop version */}
           <table className='hidden md:table table-fixed w-full text-gray-900'>
             <thead className='rounded-lg text-left text-sm font-normal'>
@@ -71,7 +81,11 @@ export default function MediaTable({ media }: MediaTableProps) {
             <tbody className='bg-white'>
               {media?.map((media) => (
                 <tr key={media.mediaId} className='border-b text-sm'>
-                  <td className='truncate px-6 py-3'>{media.mediaId}</td>
+                  <td className='px-6 py-3'>
+                    <Link href={`/dashboard/media/${media.mediaId}`}>
+                      {media.mediaId}
+                    </Link>
+                  </td>
                   <td className='truncate px-6 py-3 overflow-hidden text-ellipsis whitespace-nowrap w-60'>
                     {media.mediaTitle}
                   </td>

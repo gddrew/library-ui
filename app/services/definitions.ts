@@ -134,3 +134,24 @@ export type InvoiceForm = {
   campaign: string;
   status: 'pending' | 'paid';
 };
+
+export type MediaForm = {
+  mediaId: number;
+  created_date: Date;
+  mediaTitle: string;
+  authorName: string;
+  isbnId: string;
+  barCodeId: string;
+  publicationYear: string;
+  mediaType: string;
+  mediaFormat: string;
+  numberPages: number;
+  classificationCategory: string;
+  classificationSubCategory: string;
+  publisherName: string;
+  disposalDisposition: string;
+  acquisitionDate: Date;
+  lastUpdateDate: Date;
+  status: string;
+  isSensitive: boolean;
+};
