@@ -6,10 +6,39 @@ import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 import { addMedia } from '@/app/services/mediaService';
 import { useRouter } from 'next/navigation';
+import { subCategoryOptions } from '@/app/lib/subCategoryOptions';
+
+function getTodayLocalDate() {
+  const today = new Date();
+  // Offset so we don’t accidentally run into UTC next/prev day issues
+  today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+  return today.toISOString().split('T')[0];
+}
 
 export default function Form({}: { media: MediaField[] }) {
   const router = useRouter();
   const [mediaType, setMediaType] = useState('Book');
+  const [classificationCategory, setClassificationCategory] = useState<
+    'Fiction' | 'Non-Fiction' | ''
+  >('');
+  const [classificationSubCategory, setClassificationSubCategory] =
+    useState('');
+
+  const handleClassificationCategoryChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const value = e.target.value as 'Fiction' | 'Non-Fiction' | '';
+    setClassificationCategory(value);
+    setClassificationSubCategory('');
+  };
+
+  const getSubCategoryOptions = () => {
+    return (
+      subCategoryOptions[
+        classificationCategory as keyof typeof subCategoryOptions
+      ] || []
+    );
+  };
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -104,6 +133,7 @@ export default function Form({}: { media: MediaField[] }) {
             id='acquisitionDate'
             name='acquisitionDate'
             className='peer block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2'
+            defaultValue={getTodayLocalDate()}
             required
           />
         </div>
@@ -238,7 +268,8 @@ export default function Form({}: { media: MediaField[] }) {
             id='classificationCategory'
             name='classificationCategory'
             className='peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 px-3 text-sm outline-2'
-            defaultValue=''
+            value={classificationCategory}
+            onChange={handleClassificationCategoryChange}
             required
           >
             <option value='' disabled>
@@ -261,20 +292,18 @@ export default function Form({}: { media: MediaField[] }) {
             id='classificationSubcategory'
             name='classificationSubcategory'
             className='peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 px-3 text-sm outline-2'
-            defaultValue=''
+            value={classificationSubCategory}
+            onChange={(e) => setClassificationSubCategory(e.target.value)}
             required
           >
             <option value='' disabled>
               Select a sub-category
             </option>
-            <option value='Architecture'>Architecture</option>
-            <option value='Art/Art History'>Art/Art History</option>
-            <option value='Biography'>Biography</option>
-            <option value='Communications'>Communications</option>
-            <option value='History'>History</option>
-            <option value='Management'>Management</option>
-            <option value='Self-help'>Self-help</option>
-            <option value='Technical'>Technical</option>
+            {getSubCategoryOptions().map((option: string, index: number) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
           </select>
         </div>
       </div>

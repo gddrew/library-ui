@@ -6,6 +6,8 @@ import { MediaForm } from '@/app/services/definitions';
 import { updateMedia, deleteMedia } from '@/app/services/mediaService';
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
+import { subCategoryOptions } from '@/app/lib/subCategoryOptions';
+import { formatBarcode, formatISBN13 } from '@/app/services/utils';
 
 export default function MediaDetails({ media }: { media: MediaForm }) {
   const router = useRouter();
@@ -68,118 +70,237 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
     }
   }
 
+  const getSubCategoryOptions = () => {
+    return (
+      subCategoryOptions[
+        localData.classificationCategory as keyof typeof subCategoryOptions
+      ] || []
+    );
+  };
+
   return (
     <div>
       <form onSubmit={handleSave} className='space-y-4'>
-        {/* Media ID */}
-        <div>
-          <label className='mb-1 block text-sm font-medium'>Media ID</label>
-          <input
-            name='mediaId'
-            type='text'
-            readOnly
-            value={localData.mediaId}
-            className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm text-gray-500'
-          />
+        <h2 className='text-xl font-semibold mb-4'>General Information</h2>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
+          {/* Media ID */}
+          <div>
+            <label className='mb-1 block text-sm font-medium'>Media ID</label>
+            <input
+              name='mediaId'
+              type='text'
+              readOnly
+              value={localData.mediaId}
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm text-gray-500'
+            />
+          </div>
+
+          {/* Barcode ID */}
+          <div>
+            <label className='mb-1 block text-sm font-medium'>Barcode</label>
+            <input
+              name='barCodeId'
+              type='text'
+              readOnly
+              value={formatBarcode(localData.barCodeId)}
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm text-gray-500'
+            />
+          </div>
+
+          {/* Media Title */}
+          <div>
+            <label className='mb-1 block text-sm font-medium'>Title</label>
+            <input
+              name='mediaTitle'
+              type='text'
+              value={localData.mediaTitle}
+              onChange={handleChange}
+              readOnly={!isEditing}
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+            />
+          </div>
+
+          {/* Media Type */}
+          <div>
+            <label className='mb-1 block text-sm font-medium'>Media Type</label>
+            <select
+              name='mediaType'
+              value={localData.mediaType}
+              onChange={handleChange}
+              disabled={!isEditing}
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+            >
+              <option value='Book'>Book</option>
+              <option value='Video'>Video</option>
+              <option value='Audio Recording'>Audio Recording</option>
+            </select>
+          </div>
+
+          {/* Date Acquired */}
+          <div>
+            <label className='mb-1 block text-sm font-medium'>
+              Date Acquired
+            </label>
+            <input
+              type='date'
+              name='acquisitionDate'
+              value={
+                localData.acquisitionDate
+                  ? localData.acquisitionDate instanceof Date
+                    ? localData.acquisitionDate.toISOString().split('T')[0]
+                    : new Date(localData.acquisitionDate)
+                        .toISOString()
+                        .split('T')[0]
+                  : ''
+              }
+              onChange={handleChange}
+              disabled={!isEditing}
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+            />
+          </div>
+
+          {/* Sensitive Content */}
+          <div className='flex items-center'>
+            <input
+              type='checkbox'
+              id='sensitive'
+              name='isSensitive'
+              checked={localData.isSensitive}
+              onChange={handleCheckboxChange}
+              disabled={!isEditing}
+              className='h-4 w-4 cursor-pointer border-gray-300'
+            />
+            <label htmlFor='sensitive' className='ml-2 text-sm font-medium'>
+              Sensitive Content
+            </label>
+          </div>
         </div>
 
-        {/* Media Title */}
-        <div>
-          <label className='mb-1 block text-sm font-medium'>Title</label>
-          <input
-            name='mediaTitle'
-            type='text'
-            value={localData.mediaTitle}
-            onChange={handleChange}
-            readOnly={!isEditing}
-            className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
-          />
-        </div>
+        <h2 className='text-xl font-semibold mb-4'>Book Information</h2>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
+          {/* Publisher */}
+          <div>
+            <label className='mb-1 block text-sm font-medium'>Publisher</label>
+            <input
+              name='publisherName'
+              type='text'
+              value={localData.publisherName}
+              onChange={handleChange}
+              readOnly={!isEditing}
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+            />
+          </div>
 
-        {/* Media Type */}
-        <div>
-          <label className='mb-1 block text-sm font-medium'>Media Type</label>
-          <select
-            name='mediaType'
-            value={localData.mediaType}
-            onChange={handleChange}
-            disabled={!isEditing}
-            className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
-          >
-            <option value='Book'>Book</option>
-            <option value='Video'>Video</option>
-            <option value='Audio Recording'>Audio Recording</option>
-          </select>
-        </div>
+          {/* ISBN */}
+          <div>
+            <label className='mb-1 block text-sm font-medium'>ISBN</label>
+            <input
+              name='isbnId'
+              type='text'
+              value={
+                isEditing ? localData.isbnId : formatISBN13(localData.isbnId)
+              }
+              onChange={handleChange}
+              readOnly={!isEditing}
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+            />
+          </div>
 
-        {/* Publisher */}
-        <div>
-          <label className='mb-1 block text-sm font-medium'>Publisher</label>
-          <input
-            name='publisherName'
-            type='text'
-            value={localData.publisherName}
-            onChange={handleChange}
-            readOnly={!isEditing}
-            className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
-          />
-        </div>
+          {/* Author */}
+          <div>
+            <label className='mb-1 block text-sm font-medium'>Author</label>
+            <input
+              name='authorName'
+              type='text'
+              value={localData.authorName}
+              onChange={handleChange}
+              readOnly={!isEditing}
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+            />
+          </div>
 
-        {/* ISBN */}
-        <div>
-          <label className='mb-1 block text-sm font-medium'>ISBN</label>
-          <input
-            name='isbnId'
-            type='text'
-            value={localData.isbnId}
-            onChange={handleChange}
-            readOnly={!isEditing}
-            className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
-          />
-        </div>
+          {/* Number of Pages */}
+          <div>
+            <label className='mb-1 block text-sm font-medium'>
+              Number of Pages
+            </label>
+            <input
+              name='numberPages'
+              type='number'
+              value={localData.numberPages}
+              onChange={handleChange}
+              readOnly={!isEditing}
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+            />
+          </div>
 
-        {/* Author */}
-        <div>
-          <label className='mb-1 block text-sm font-medium'>Author</label>
-          <input
-            name='authorName'
-            type='text'
-            value={localData.authorName}
-            onChange={handleChange}
-            readOnly={!isEditing}
-            className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
-          />
-        </div>
+          {/* Publication Year */}
+          <div>
+            <label className='mb-1 block text-sm font-medium'>
+              Publication Year
+            </label>
+            <input
+              name='publicationYear'
+              type='text'
+              value={localData.publicationYear}
+              onChange={handleChange}
+              readOnly={!isEditing}
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+            />
+          </div>
 
-        {/* Number of Pages */}
-        <div>
-          <label className='mb-1 block text-sm font-medium'>
-            Number of Pages
-          </label>
-          <input
-            name='numberPages'
-            type='number'
-            value={localData.numberPages}
-            onChange={handleChange}
-            readOnly={!isEditing}
-            className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
-          />
-        </div>
+          {/* Format */}
+          <div>
+            <label className='mb-1 block text-sm font-medium'>Format</label>
+            <select
+              name='mediaFormat'
+              value={localData.mediaFormat}
+              onChange={handleChange}
+              disabled={!isEditing}
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+            >
+              <option value='Book'>Book</option>
+              <option value='Video'>Video</option>
+              <option value='Audio Recording'>Audio Recording</option>
+            </select>
+          </div>
 
-        {/* Sensitive Content */}
-        <div className='flex items-center'>
-          <input
-            type='checkbox'
-            id='sensitive'
-            name='isSensitive'
-            checked={localData.isSensitive}
-            onChange={handleCheckboxChange}
-            disabled={!isEditing}
-            className='h-4 w-4 cursor-pointer border-gray-300'
-          />
-          <label htmlFor='sensitive' className='ml-2 text-sm font-medium'>
-            Sensitive Content
-          </label>
+          {/* Classification Category */}
+          <div>
+            <label className='mb-1 block text-sm font-medium'>
+              Classification Category
+            </label>
+            <select
+              name='classificationCategory'
+              value={localData.classificationCategory}
+              onChange={handleChange}
+              disabled={!isEditing}
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+            >
+              <option value='Fiction'>Fiction</option>
+              <option value='Non-Fiction'>Non-Fiction</option>
+            </select>
+          </div>
+
+          {/* Classification Sub-category */}
+          <div>
+            <label className='mb-1 block text-sm font-medium'>
+              Classification Sub-category
+            </label>
+            <select
+              name='classificationSubCategory'
+              value={localData.classificationSubCategory}
+              onChange={handleChange}
+              disabled={!isEditing}
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+            >
+              {getSubCategoryOptions().map((option: string, index: number) => (
+                <option key={index} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Action Buttons */}

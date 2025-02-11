@@ -14,6 +14,18 @@ export function formatISBN13(isbn: string | number): string {
   return `${prefix}-${group}-${publisher}-${title}-${checkDigit}`;
 }
 
+// Format Barcode
+export function formatBarcode(barcodeId: string | number): string {
+  const barcodeStr = barcodeId.toString().replace(/[^0-9]/g, '');
+  const prefix = barcodeStr.substring(0, 1);
+  const library = barcodeStr.substring(1, 5);
+  const sequence = barcodeStr.substring(5, 13);
+  const checkDigit = barcodeStr.substring(13);
+
+  return `${prefix}-${library}-${sequence}-${checkDigit}`;
+  //39900100000014
+}
+
 // Format telephone numbers for display
 export function formatTelephone(telephone: string): string {
   // Strip out non-digit characters, just in case
