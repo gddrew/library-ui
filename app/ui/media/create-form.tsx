@@ -23,6 +23,7 @@ export default function Form({}: { media: MediaField[] }) {
   >('');
   const [classificationSubCategory, setClassificationSubCategory] =
     useState('');
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const handleClassificationCategoryChange = (
     e: React.ChangeEvent<HTMLSelectElement>
@@ -31,6 +32,18 @@ export default function Form({}: { media: MediaField[] }) {
     setClassificationCategory(value);
     setClassificationSubCategory('');
   };
+
+  function validateField(name: string, value: string) {
+    if (!value.trim()) {
+      setErrors((prev) => ({ ...prev, [name]: 'This field is required' }));
+    } else {
+      setErrors((prev) => {
+        const updatedErrors = { ...prev };
+        delete updatedErrors[name]; // Remove error if field is valid
+        return updatedErrors;
+      });
+    }
+  }
 
   const getSubCategoryOptions = () => {
     return (
@@ -44,39 +57,62 @@ export default function Form({}: { media: MediaField[] }) {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
-    const mediaTitle = formData.get('mediaTitle') as string;
-    const authorName = formData.get('author') as string;
-    const isbnId = formData.get('isbn') as string;
-    const publicationYear = formData.get('publicationYear') as string;
-    const mediaTypeValue = formData.get('mediaType') as string;
-    const mediaFormat = formData.get('mediaFormat') as string;
-    const numberPages = formData.get('numberPages') as string;
-    const classificationCategory = formData.get(
-      'classificationCategory'
-    ) as string;
-    const classificationSubCategory = formData.get(
-      'classificationSubCategory'
-    ) as string;
-    const publisherName = formData.get('publisherName') as string;
-    const acquisitionDate = formData.get('acquisitionDate') as unknown as Date;
-    const disposalDisposition = formData.get('disposalDisposition') as string;
-    const isSensitive = formData.get('isSensitive') ? true : false;
+    const newErrors: { [key: string]: string } = {};
+
+    // List of required fields
+    const requiredFields = [
+      'mediaTitle',
+      'author',
+      'publicationYear',
+      'mediaType',
+      'mediaFormat',
+      'publisherName',
+      'acquisitionDate',
+    ];
+
+    if (mediaType === 'Book') {
+      requiredFields.push(
+        'numberPages',
+        'classificationCategory',
+        'classificationSubCategory'
+      );
+    }
+
+    requiredFields.forEach((field) => {
+      if (!formData.get(field)?.toString().trim()) {
+        newErrors[field] = 'This field is required';
+      }
+    });
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
 
     try {
       await addMedia({
-        mediaTitle,
-        authorName,
-        isbnId,
-        publicationYear,
-        mediaType: mediaTypeValue,
-        mediaFormat,
-        numberPages: parseInt(numberPages, 10),
-        classificationCategory,
-        classificationSubCategory,
-        publisherName,
-        acquisitionDate,
-        disposalDisposition,
-        isSensitive,
+        mediaTitle: formData.get('mediaTitle') as string,
+        authorName: formData.get('author') as string,
+        isbnId: formData.get('isbn') as string,
+        publicationYear: formData.get('publicationYear') as string,
+        mediaType,
+        mediaFormat: formData.get('mediaFormat') as string,
+        numberPages:
+          mediaType === 'Book'
+            ? parseInt(formData.get('numberPages') as string, 10)
+            : 0,
+        classificationCategory:
+          mediaType === 'Book'
+            ? (formData.get('classificationCategory') as string)
+            : '',
+        classificationSubCategory:
+          mediaType === 'Book'
+            ? (formData.get('classificationSubCategory') as string)
+            : '',
+        publisherName: formData.get('publisherName') as string,
+        acquisitionDate: formData.get('acquistionDate') as unknown as Date,
+        disposalDisposition: formData.get('disposalDisposation') as string,
+        isSensitive: formData.get('isSensitive') ? true : false,
       });
       router.push('/dashboard/media');
     } catch (err) {
@@ -100,9 +136,16 @@ export default function Form({}: { media: MediaField[] }) {
             type='text'
             id='mediaTitle'
             name='mediaTitle'
+            placeholder='Enter a Publication Title'
             required
-            className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm placeholder-gray-500'
+            onBlur={(e) => validateField(e.target.name, e.target.value)}
+            className={`peer w-full rounded-md border py-2 px-3 text-sm placeholder-gray-500 ${
+              errors.mediaTitle ? 'border-red-500' : 'border-gray-200'
+            }`}
           />
+          {errors.mediaTitle && (
+            <span className='text-red-500 text-sm'>{errors.mediaTitle}</span>
+          )}
         </div>
 
         {/* Media Type */}
@@ -114,7 +157,14 @@ export default function Form({}: { media: MediaField[] }) {
             id='mediaType'
             name='mediaType'
             defaultValue='Book'
-            onChange={(e) => setMediaType(e.target.value)}
+            onChange={(e) => {
+              const selectedType = e.target.value;
+              setMediaType(selectedType);
+              if (selectedType !== 'Book') {
+                setClassificationCategory('');
+                setClassificationSubCategory('');
+              }
+            }}
             className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
           >
             <option value='Book'>Book</option>
@@ -163,9 +213,16 @@ export default function Form({}: { media: MediaField[] }) {
             type='text'
             id='publisherName'
             name='publisherName'
+            placeholder='Enter a publisher'
             required
-            className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+            onBlur={(e) => validateField(e.target.name, e.target.value)}
+            className={`peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm placeholder-gray-500' ${
+              errors.publisherName ? 'border-red-500' : 'border-gray-200'
+            }`}
           />
+          {errors.publisherName && (
+            <span className='text-red-500 text-sm'>{errors.publisherName}</span>
+          )}
         </div>
 
         {/* ISBN */}
@@ -177,7 +234,6 @@ export default function Form({}: { media: MediaField[] }) {
             type='text'
             id='isbn'
             name='isbn'
-            required
             className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
           />
         </div>
@@ -191,24 +247,38 @@ export default function Form({}: { media: MediaField[] }) {
             type='text'
             id='author'
             name='author'
+            placeholder='Enter an author'
             required
-            className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+            onBlur={(e) => validateField(e.target.name, e.target.value)}
+            className={`peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm placeholder-gray-500' ${
+              errors.author ? 'border-red-500' : 'border-gray-200'
+            }`}
           />
+          {errors.author && (
+            <span className='text-red-500 text-sm'>{errors.author}</span>
+          )}
         </div>
 
-        {/* Number of Page */}
-        <div className='flex flex-col'>
-          <label htmlFor='numberPages' className='text-sm font-medium mb-1'>
-            Number of Pages
-          </label>
-          <input
-            type='number'
-            id='numberPages'
-            name='numberPages'
-            required
-            className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
-          />
-        </div>
+        {/* Number of Pages (Only for Books) */}
+        {mediaType === 'Book' && (
+          <div className='flex flex-col'>
+            <label htmlFor='numberPages' className='text-sm font-medium mb-1'>
+              Number of Pages
+            </label>
+            <input
+              type='number'
+              id='numberPages'
+              name='numberPages'
+              onBlur={(e) => validateField(e.target.name, e.target.value)}
+              className={`peer w-full rounded-md border py-2 px-3 text-sm ${
+                errors.numberPages ? 'border-red-500' : 'border-gray-200'
+              }`}
+            />
+            {errors.numberPages && (
+              <span className='text-red-500 text-sm'>{errors.numberPages}</span>
+            )}
+          </div>
+        )}
 
         {/* Publication Year */}
         <div className='flex flex-col'>
@@ -219,9 +289,18 @@ export default function Form({}: { media: MediaField[] }) {
             type='number'
             id='publicationYear'
             name='publicationYear'
+            placeholder='Enter publication year'
             required
-            className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm placeholder-gray-500'
+            onBlur={(e) => validateField(e.target.name, e.target.value)}
+            className={`peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm placeholder-gray-500' ${
+              errors.publicationYear ? 'border-red-500' : 'border-gray-200'
+            }`}
           />
+          {errors.publicationYear && (
+            <span className='text-red-500 text-sm'>
+              {errors.publicationYear}
+            </span>
+          )}
         </div>
 
         {/* Media Format */}
@@ -245,40 +324,54 @@ export default function Form({}: { media: MediaField[] }) {
               <>
                 <option value='DVD'>DVD</option>
                 <option value='Streaming'>Streaming</option>
+                <option value='VHS'>VHS</option>
               </>
             )}
             {mediaType === 'Audio Recording' && (
               <>
                 <option value='CD'>CD</option>
                 <option value='MP3'>MP3</option>
+                <option value='Vinyl'>Vinyl</option>
+                <option value='Cassette'>Cassette</option>
               </>
             )}
           </select>
         </div>
 
-        {/* Classification Category */}
-        <div className='flex flex-col'>
-          <label
-            htmlFor='classificationCategory'
-            className='mb-2 block text-sm font-medium'
-          >
-            Classification Category
-          </label>
-          <select
-            id='classificationCategory'
-            name='classificationCategory'
-            className='peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 px-3 text-sm outline-2'
-            value={classificationCategory}
-            onChange={handleClassificationCategoryChange}
-            required
-          >
-            <option value='' disabled>
-              Select a category
-            </option>
-            <option value='Fiction'>Fiction</option>
-            <option value='Non-Fiction'>Non-Fiction</option>
-          </select>
-        </div>
+        {/* Classification Category (Only for Books) */}
+        {mediaType === 'Book' && (
+          <div className='flex flex-col'>
+            <label
+              htmlFor='classificationCategory'
+              className='text-sm font-medium mb-1'
+            >
+              Classification Category
+            </label>
+            <select
+              id='classificationCategory'
+              name='classificationCategory'
+              value={classificationCategory}
+              onChange={handleClassificationCategoryChange}
+              onBlur={(e) => validateField(e.target.name, e.target.value)}
+              className={`peer w-full rounded-md border py-2 px-3 text-sm ${
+                errors.classificationCategory
+                  ? 'border-red-500'
+                  : 'border-gray-200'
+              }`}
+            >
+              <option value='' disabled>
+                Select a category
+              </option>
+              <option value='Fiction'>Fiction</option>
+              <option value='Non-Fiction'>Non-Fiction</option>
+            </select>
+            {errors.classificationCategory && (
+              <span className='text-red-500 text-sm'>
+                {errors.classificationCategory}
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Classification Sub-category */}
         <div className='flex flex-col'>
@@ -294,7 +387,8 @@ export default function Form({}: { media: MediaField[] }) {
             className='peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 px-3 text-sm outline-2'
             value={classificationSubCategory}
             onChange={(e) => setClassificationSubCategory(e.target.value)}
-            required
+            required={mediaType === 'Book'}
+            disabled={mediaType !== 'Book'}
           >
             <option value='' disabled>
               Select a sub-category

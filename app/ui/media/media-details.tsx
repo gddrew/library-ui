@@ -35,7 +35,20 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) {
     const { name, value } = e.target;
-    setLocalData((prev) => ({ ...prev, [name]: value }));
+
+    setLocalData((prev) => {
+      // Reset classification fields and numberPages if mediaType changes
+      if (name === 'mediaType' && value !== 'Book') {
+        return {
+          ...prev,
+          mediaType: value,
+          classificationCategory: '',
+          classificationSubCategory: '',
+          numberPages: 0, // Clear number of pages
+        };
+      }
+      return { ...prev, [name]: value };
+    });
   }
 
   // Handle boolean checkbox changes
@@ -259,9 +272,24 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
               disabled={!isEditing}
               className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
             >
-              <option value='Book'>Book</option>
-              <option value='Video'>Video</option>
-              <option value='Audio Recording'>Audio Recording</option>
+              {localData.mediaType === 'Book' && (
+                <>
+                  <option value='hardcover'>Hardcover</option>
+                  <option value='softcover'>Softcover</option>
+                </>
+              )}
+              {localData.mediaType === 'Video' && (
+                <>
+                  <option value='DVD'>DVD</option>
+                  <option value='Streaming'>Streaming</option>
+                </>
+              )}
+              {localData.mediaType === 'Audio Recording' && (
+                <>
+                  <option value='CD'>CD</option>
+                  <option value='MP3'>MP3</option>
+                </>
+              )}
             </select>
           </div>
 
@@ -274,9 +302,13 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
               name='classificationCategory'
               value={localData.classificationCategory}
               onChange={handleChange}
-              disabled={!isEditing}
+              required={localData.mediaType === 'Book'}
+              disabled={!isEditing || localData.mediaType !== 'Book'}
               className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
             >
+              <option value='' disabled>
+                Select a category
+              </option>
               <option value='Fiction'>Fiction</option>
               <option value='Non-Fiction'>Non-Fiction</option>
             </select>
@@ -291,9 +323,13 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
               name='classificationSubCategory'
               value={localData.classificationSubCategory}
               onChange={handleChange}
-              disabled={!isEditing}
+              required={localData.mediaType === 'Book'}
+              disabled={!isEditing || localData.mediaType !== 'Book'}
               className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
             >
+              <option value='' disabled>
+                Select a sub-category
+              </option>
               {getSubCategoryOptions().map((option: string, index: number) => (
                 <option key={index} value={option}>
                   {option}
