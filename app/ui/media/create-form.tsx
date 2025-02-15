@@ -190,13 +190,13 @@ export default function Form({}: { media: MediaField[] }) {
 
         {/* Sensitive */}
         <div className='flex flex-col justify-end'>
-          <label htmlFor='sensitive' className='text-sm font-medium mb-auto'>
+          <label htmlFor='isSensitive' className='text-sm font-medium mb-auto'>
             Sensitive Content
           </label>
           <input
             type='checkbox'
-            id='sensitive'
-            name='sensitive'
+            id='isSensitive'
+            name='isSensitive'
             className='h-4 w-4 cursor-pointer border-gray-300'
           />
         </div>

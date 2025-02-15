@@ -190,15 +190,15 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
           <div className='flex items-center'>
             <input
               type='checkbox'
-              id='sensitive'
+              id='isSensitive'
               name='isSensitive'
-              checked={localData.isSensitive}
+              checked={Boolean(localData.isSensitive)}
               onChange={handleCheckboxChange}
               disabled={!isEditing}
               className='h-4 w-4 mb-6 cursor-pointer border-gray-300'
             />
             <label
-              htmlFor='sensitive'
+              htmlFor='isSensitive'
               className='ml-2 mb-6 text-sm font-medium'
             >
               Sensitive Content
