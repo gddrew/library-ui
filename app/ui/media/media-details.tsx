@@ -94,8 +94,10 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
   return (
     <div>
       <form onSubmit={handleSave} className='space-y-4'>
-        <h2 className='text-xl font-semibold mb-4'>General Information</h2>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
+        <h2 className='text-xl font-semibold mb-2 border-b pb-2'>
+          General Information
+        </h2>
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4'>
           {/* Media ID */}
           <div>
             <label className='mb-1 block text-sm font-medium'>Media ID</label>
@@ -120,7 +122,19 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
             />
           </div>
 
-          {/* Media Title */}
+          {/* Checkout History Link */}
+          <div className='mt-6'>
+            <Link
+              href={`/dashboard/media/${media.mediaId}/history`}
+              className='inline-block px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600'
+            >
+              View Checkout History
+            </Link>
+          </div>
+        </div>
+
+        {/* Media Title */}
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4'>
           <div>
             <label className='mb-1 block text-sm font-medium'>Title</label>
             <input
@@ -181,15 +195,20 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
               checked={localData.isSensitive}
               onChange={handleCheckboxChange}
               disabled={!isEditing}
-              className='h-4 w-4 cursor-pointer border-gray-300'
+              className='h-4 w-4 mb-6 cursor-pointer border-gray-300'
             />
-            <label htmlFor='sensitive' className='ml-2 text-sm font-medium'>
+            <label
+              htmlFor='sensitive'
+              className='ml-2 mb-6 text-sm font-medium'
+            >
               Sensitive Content
             </label>
           </div>
         </div>
 
-        <h2 className='text-xl font-semibold mb-4'>Book Information</h2>
+        <h2 className='text-xl font-semibold mb-2 border-b pb-2'>
+          Book Information
+        </h2>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
           {/* Publisher */}
           <div>
@@ -295,7 +314,7 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
 
           {/* Classification Category */}
           <div>
-            <label className='mb-1 block text-sm font-medium'>
+            <label className='mb-2 block text-sm font-medium'>
               Classification Category
             </label>
             <select
@@ -304,7 +323,7 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
               onChange={handleChange}
               required={localData.mediaType === 'Book'}
               disabled={!isEditing || localData.mediaType !== 'Book'}
-              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm mb-6'
             >
               <option value='' disabled>
                 Select a category
@@ -325,7 +344,7 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
               onChange={handleChange}
               required={localData.mediaType === 'Book'}
               disabled={!isEditing || localData.mediaType !== 'Book'}
-              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm mb-6'
             >
               <option value='' disabled>
                 Select a sub-category

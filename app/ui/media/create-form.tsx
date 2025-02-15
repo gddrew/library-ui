@@ -269,8 +269,9 @@ export default function Form({}: { media: MediaField[] }) {
               type='number'
               id='numberPages'
               name='numberPages'
+              placeholder='Enter number of pages'
               onBlur={(e) => validateField(e.target.name, e.target.value)}
-              className={`peer w-full rounded-md border py-2 px-3 text-sm ${
+              className={`peer w-full rounded-md border py-2 px-3 text-sm placeholder-gray-500 ${
                 errors.numberPages ? 'border-red-500' : 'border-gray-200'
               }`}
             />
