@@ -31,31 +31,6 @@ export async function listMedia(): Promise<Media[]> {
   }
 }
 
-export interface LoanItem {
-  loanId: number;
-  patronId: number;
-  patronName: string;
-  checkoutDate: string;
-  dueDate: string;
-  returnDate: string | null;
-  status: string;
-}
-
-export interface HistoryRecord {
-  mediaId: number;
-  mediaTitle: string;
-  items: LoanItem[];
-}
-
-export const fetchCheckoutHistory = async (
-  mediaId: number
-): Promise<HistoryRecord[]> => {
-  const response = await apiClient.get(
-    `/api/reports/loans-media?mediaId=${mediaId}`
-  );
-  return response.data; // Which should match CheckoutHistoryRecord[]
-};
-
 // Fetch a single media item by ID
 export async function getMediaByID(mediaId: number) {
   try {
@@ -156,3 +131,28 @@ export async function deleteMedia(mediaId: number) {
     throw error;
   }
 }
+
+export interface LoanItem {
+  loanId: number;
+  patronId: number;
+  patronName: string;
+  checkoutDate: string;
+  dueDate: string;
+  returnDate: string | null;
+  status: string;
+}
+
+export interface HistoryRecord {
+  mediaId: number;
+  mediaTitle: string;
+  items: LoanItem[];
+}
+
+export const fetchCheckoutHistory = async (
+  mediaId: number
+): Promise<HistoryRecord[]> => {
+  const response = await apiClient.get(
+    `/api/reports/loans-media?mediaId=${mediaId}`
+  );
+  return response.data; // Which should match CheckoutHistoryRecord[]
+};

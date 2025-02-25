@@ -132,3 +132,29 @@ export async function deletePatron(patronId: number) {
     throw error;
   }
 }
+
+export interface LoanRecord {
+  loanId: number;
+  patronId: number;
+  patronName: string;
+  loanStatus: string;
+  items: Array<{
+    mediaId: number;
+    checkoutDate: string;
+    dueDate: string;
+    returnDate: string | null;
+    status: string;
+    mediaDetails: {
+      media_title: string;
+    };
+  }>;
+}
+
+export const fetchCheckoutHistory = async (
+  patronId: number
+): Promise<LoanRecord[]> => {
+  const response = await apiClient.get(
+    `/api/reports/loans-patrons?patronId=${patronId}`
+  );
+  return response.data;
+};

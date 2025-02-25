@@ -102,10 +102,10 @@ export default function PatronDetails({ patron }: { patron: PatronForm }) {
           {/* Checkout History Link */}
           <div className='mt-6'>
             <Link
-              href={`/dashboard/patron/${patron.patronId}/history`}
+              href={`/dashboard/patrons/${patron.patronId}/history`}
               className='inline-block px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600'
             >
-              View Checkout History
+              View Loan History
             </Link>
           </div>
         </div>
