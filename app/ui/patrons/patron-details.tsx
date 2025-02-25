@@ -219,10 +219,10 @@ export default function PatronDetails({ patron }: { patron: PatronForm }) {
               disabled={!isEditing}
               className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
             >
-              <option value='CALL'>home</option>
-              <option value='SMS'>text</option>
-              <option value='MAIL'>mail</option>
-              <option value='EMAIL'>email</option>
+              <option value='home'>Home</option>
+              <option value='text'>Text</option>
+              <option value='mail'>Mail</option>
+              <option value='email'>Email</option>
             </select>
           </div>
         </div>
@@ -327,7 +327,7 @@ export default function PatronDetails({ patron }: { patron: PatronForm }) {
                 Edit
               </button>
               <Link
-                href='/dashboard/media'
+                href='/dashboard/patrons'
                 className='flex h-10 items-center rounded-lg bg-gray-100 px-4 py-1 text-gray-700 hover:bg-gray-200'
               >
                 Back

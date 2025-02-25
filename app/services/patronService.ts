@@ -1,5 +1,5 @@
 import apiClient from './apiClient';
-import { Patron } from './definitions';
+import { CreatePatronPayload, Patron } from './definitions';
 
 // Fetch all patrons
 export async function listPatrons(): Promise<Patron[]> {
@@ -97,7 +97,9 @@ export async function getPatronByEmail(patronEmail: string) {
 }
 
 // Create a new patron
-export async function createPatron(patronData: Patron) {
+export async function createPatron(
+  patronData: CreatePatronPayload
+): Promise<Patron> {
   try {
     const response = await apiClient.post(`/api/patrons`, patronData);
     return response.data;

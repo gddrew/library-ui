@@ -53,7 +53,6 @@ export function DeleteMedia({
   }
   return (
     <>
-      {/* Delete button that triggers modal */}
       <button
         type='button'
         onClick={() => setShowConfirm(true)}

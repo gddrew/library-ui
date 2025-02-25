@@ -9,7 +9,7 @@ import { Patron } from '@/app/services/definitions';
 export function CreatePatron() {
   return (
     <Link
-      href='/dashboard/patron/create'
+      href='/dashboard/patrons/create'
       className='flex h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600'
     >
       <span className='hidden md:block'>Create Patron</span>{' '}
@@ -21,7 +21,7 @@ export function CreatePatron() {
 export function UpdatePatron({ patronId }: { patronId: number }) {
   return (
     <Link
-      href={`/dashboard/patron/${patronId}/edit`}
+      href={`/dashboard/patrons/${patronId}/edit`}
       className='rounded-md border p-2 hover:bg-gray-100'
     >
       <PencilIcon className='w-5' />

@@ -1,7 +1,10 @@
 import Breadcrumbs from '@/app/ui/breadcrumbs';
 import CreatePatronForm from '@/app/ui/patrons/create-form';
+import { listPatrons } from '@/app/services/patronService';
 
 export default async function Page() {
+  const patrons = await listPatrons();
+
   return (
     <main>
       <Breadcrumbs
@@ -9,12 +12,12 @@ export default async function Page() {
           { label: 'Patrons', href: '/dashboard/patrons' },
           {
             label: 'Create Patron',
-            href: '/dashboard/patrons',
+            href: '/dashboard/patrons/create',
             active: true,
           },
         ]}
       />
-      <CreatePatronForm />
+      <CreatePatronForm patron={patrons} />
     </main>
   );
 }

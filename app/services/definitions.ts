@@ -68,6 +68,13 @@ export type CreateMediaPayload = Omit<
   'mediaId' | 'created_date' | 'barCodeId' | 'lastUpdateDate' | 'status'
 >;
 
+// The minimal fields the client must send when creating a new Patron
+// Omit fields that the DB auto-generates or you don't want to supply
+export type CreatePatronPayload = Omit<
+  Patron,
+  'patronId' | 'status' | 'created_date' | 'lastUpdateDate'
+>;
+
 export type Revenue = {
   month: string;
   revenue: number;
@@ -156,6 +163,7 @@ export type MediaForm = {
   isSensitive: boolean;
 };
 
+// The full patron record (when reading from the DB)
 export type PatronForm = {
   patronId: number;
   created_date: Date;
