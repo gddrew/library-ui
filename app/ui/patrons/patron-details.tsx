@@ -37,7 +37,8 @@ export default function PatronDetails({ patron }: { patron: PatronForm }) {
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     try {
-      await updatePatron(patron.patronId, localData);
+      const updatedPatron = await updatePatron(patron.patronId, localData);
+      setLocalData(updatedPatron);
       setIsEditing(false);
     } catch (err) {
       console.error('Failed to update patron', err);
@@ -174,7 +175,7 @@ export default function PatronDetails({ patron }: { patron: PatronForm }) {
             </label>
             <input
               type='date'
-              name='createdDate'
+              name='lastUpdateDate'
               value={
                 localData.lastUpdateDate
                   ? localData.lastUpdateDate instanceof Date
@@ -191,7 +192,7 @@ export default function PatronDetails({ patron }: { patron: PatronForm }) {
         </div>
 
         {/* Contact Information Block */}
-        <h2 className='text-xl font-semibold mb-2 border-b pb-2'>
+        <h2 className='text-xl font-semibold mb-2 border-b pb-2 py-6'>
           Contact Information
         </h2>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
@@ -233,9 +234,10 @@ export default function PatronDetails({ patron }: { patron: PatronForm }) {
             <input
               name='streetAddress'
               type='text'
-              readOnly
               value={localData.streetAddress}
-              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm text-gray-500'
+              onChange={handleChange}
+              readOnly={!isEditing}
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
             />
           </div>
         </div>
@@ -248,7 +250,7 @@ export default function PatronDetails({ patron }: { patron: PatronForm }) {
               value={localData.cityName}
               onChange={handleChange}
               disabled={!isEditing}
-              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm text-gray-500'
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
             />
           </div>
           <div>
@@ -258,7 +260,7 @@ export default function PatronDetails({ patron }: { patron: PatronForm }) {
               value={localData.stateName}
               onChange={handleChange}
               disabled={!isEditing}
-              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm text-gray-500'
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
             >
               <option value=''>Select a state</option>
               {usStateOptions.map((state) => (
@@ -273,9 +275,10 @@ export default function PatronDetails({ patron }: { patron: PatronForm }) {
             <input
               name='zipCode'
               type='text'
-              readOnly
+              onChange={handleChange}
+              readOnly={!isEditing}
               value={localData.zipCode}
-              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm text-gray-500'
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
             />
           </div>
         </div>
@@ -288,7 +291,7 @@ export default function PatronDetails({ patron }: { patron: PatronForm }) {
               value={formatTelephone(localData.telephoneHome)}
               onChange={handleChange}
               disabled={!isEditing}
-              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm text-gray-500'
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
             />
           </div>
           <div>
@@ -299,13 +302,13 @@ export default function PatronDetails({ patron }: { patron: PatronForm }) {
               value={formatTelephone(localData.telephoneMobile)}
               onChange={handleChange}
               disabled={!isEditing}
-              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm text-gray-500'
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
             />
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className='mt-6 flex items-center gap-4'>
+        <div className='mt-6 flex items-center gap-4 py-6'>
           {isEditing ? (
             <>
               <button
