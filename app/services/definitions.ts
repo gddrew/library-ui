@@ -155,3 +155,20 @@ export type MediaForm = {
   status: string;
   isSensitive: boolean;
 };
+
+export type PatronForm = {
+  patronId: number;
+  created_date: Date;
+  patronName: string;
+  dateOfBirth: Date;
+  streetAddress: string;
+  cityName: string;
+  stateName: string;
+  zipCode: string;
+  telephoneHome: string;
+  telephoneMobile: string;
+  emailAddress: string;
+  contactMethod: string;
+  status: string;
+  lastUpdateDate: Date;
+};

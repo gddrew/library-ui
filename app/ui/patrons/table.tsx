@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { formatTelephone, capitalizeFirstLetter } from '@/app/services/utils';
 import { UpdatePatron } from '@/app/ui/patrons/buttons';
 import { Patron } from '@/app/services/definitions';
@@ -49,6 +50,7 @@ export default function PatronTable({ patrons }: PatronTableProps) {
               </div>
             ))}
           </div>
+
           {/* Desktop version */}
           <table className='hidden md:table table-fixed w-full text-gray-900'>
             <thead className='rounded-lg text-left text-sm font-normal'>
@@ -76,7 +78,11 @@ export default function PatronTable({ patrons }: PatronTableProps) {
             <tbody className='bg-white'>
               {patrons?.map((patron) => (
                 <tr key={patron.patronId} className='border-b text-sm'>
-                  <td className='truncate px-6 py-3'>{patron.patronId}</td>
+                  <td className='px-6 py-3'>
+                    <Link href={`/dashboard/patrons/${patron.patronId}`}>
+                      {patron.patronId}
+                    </Link>
+                  </td>
                   <td className='truncate px-6 py-3 overflow-hidden text-ellipsis whitespace-nowrap w-40'>
                     {patron.patronName}
                   </td>
