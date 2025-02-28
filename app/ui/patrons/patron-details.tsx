@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 import { usStateOptions } from '@/app/lib/state-options';
 import { formatTelephone } from '@/app/services/utils';
+import { CreditCardIcon } from '@heroicons/react/24/outline';
 
 export default function PatronDetails({ patron }: { patron: PatronForm }) {
   const router = useRouter();
@@ -71,17 +72,23 @@ export default function PatronDetails({ patron }: { patron: PatronForm }) {
           General Information
         </h2>
         {/* Patron ID */}
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4'>
+        <div className='grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-4'>
           <div>
             <label className='mb-1 block text-sm font-medium'>Patron ID</label>
-            <input
-              name='patronId'
-              type='text'
-              readOnly
-              value={localData.patronId}
-              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm text-gray-500'
-            />
+            <div className='flex items-center gap-2'>
+              <input
+                name='patronId'
+                type='text'
+                readOnly
+                value={localData.patronId}
+                className='block w-40 rounded-md border border-gray-200 py-2 px-3 text-sm text-gray-500'
+              />
+              <Link href={`/dashboard/patrons/${patron.patronId}/cards`}>
+                <CreditCardIcon className='h-6 w-6' />
+              </Link>
+            </div>
           </div>
+
           {/* Status */}
           <div>
             <label className='mb-1 block text-sm font-medium'>
