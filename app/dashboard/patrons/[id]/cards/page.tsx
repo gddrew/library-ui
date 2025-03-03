@@ -13,13 +13,13 @@ export default async function PatronCards({
   params: { id: string };
 }) {
   const patronId = Number(params.id);
-
   const cards = await getCardsByPatronId(patronId);
+  const patronName = cards.length > 0 ? cards[0].patronName : 'Unknown Patron';
 
   return (
     <div>
       <h1 className='text-xl font-semibold mb-4'>
-        Library Card Issue History for Patron
+        Library Card Issue History for patron: {patronName}
       </h1>
 
       {cards.length === 0 ? (
@@ -45,7 +45,7 @@ export default async function PatronCards({
                 <td className='px-3 py-2'>{card.cardId}</td>
                 <td className='px-3 py-2'>{formatBarcode(card.barCodeId)}</td>
                 <td className='px-3 py-2'>
-                  {capitalizeFirstLetter(card.status)}
+                  {capitalizeFirstLetter(card.cardStatus)}
                 </td>
                 <td className='px-3 py-2'>
                   {formatDateToLocal(card.createdDate)}
