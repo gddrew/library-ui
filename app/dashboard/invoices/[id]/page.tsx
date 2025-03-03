@@ -10,13 +10,12 @@ export const metadata: Metadata = {
 };
 
 export default async function InvoicePage({
-  params,
+  params: promisedParams,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const invoiceId = Number(params.id);
-
-  // Fetch the invoice and patrons in parallel
+  const { id } = await promisedParams;
+  const invoiceId = Number(id);
   const [invoice, patrons] = await Promise.all([
     getInvoiceById(invoiceId),
     listPatrons(),

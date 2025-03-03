@@ -7,11 +7,12 @@ import Breadcrumbs from '@/app/ui/breadcrumbs';
 export const metadata: Metadata = { title: 'View Patron' };
 
 export default async function PatronPage({
-  params,
+  params: promisedParams,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const patronId = Number(params.id);
+  const { id } = await promisedParams;
+  const patronId = Number(id);
   const patron = await getPatronById(patronId);
   if (!patron) {
     notFound();

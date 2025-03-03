@@ -9,15 +9,13 @@ export const metadata: Metadata = {
 };
 
 export default async function MediaPage({
-  params,
+  params: promisedParams,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const mediaId = Number(params.id);
-
-  // Fetch the media
+  const { id } = await promisedParams;
+  const mediaId = Number(id);
   const media = await getMediaByID(mediaId);
-
   if (!media) {
     notFound();
   }
