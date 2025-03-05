@@ -19,9 +19,14 @@ export default async function PatronHistoryPage({ params }: Props) {
     history = [];
   }
 
+  const patronName =
+    history.length > 0 ? history[0].patronName : 'Unknown Patron';
+
   return (
     <div>
-      <h1 className='text-xl font-semibold mb-4'>Checkout History</h1>
+      <h1 className='text-xl font-semibold mb-4'>
+        Checkout History for patron: {patronName}
+      </h1>
 
       {/* If you are returning data in the same shape as you shared, 
                 you'll have an array of top-level objects, each with an `items` array. */}

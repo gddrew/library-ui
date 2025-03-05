@@ -8,11 +8,12 @@ import Link from 'next/link';
 import { IssueCardButton } from '@/app/ui/cards/buttons';
 
 export default async function PatronCards({
-  params,
+  params: promisedParams,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const patronId = Number(params.id);
+  const { id } = await promisedParams;
+  const patronId = Number(id);
   const cards = await getCardsByPatronId(patronId);
   const patronName = cards.length > 0 ? cards[0].patronName : 'Unknown Patron';
 
