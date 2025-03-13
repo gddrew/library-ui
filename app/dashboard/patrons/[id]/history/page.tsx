@@ -2,14 +2,13 @@ import { fetchCheckoutHistory, LoanRecord } from '@/app/services/patronService';
 import { capitalizeFirstLetter, formatDateToLocal } from '@/app/services/utils';
 import Link from 'next/link';
 
-interface Props {
-  params: {
-    id: string;
-  };
-}
-
-export default async function PatronHistoryPage({ params }: Props) {
-  const patronIdNum = Number(params.id);
+export default async function PatronHistoryPage({
+  params: promisedParams,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await promisedParams;
+  const patronIdNum = Number(id);
 
   let history: LoanRecord[] = [];
   try {

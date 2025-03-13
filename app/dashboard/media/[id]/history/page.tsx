@@ -6,14 +6,13 @@ import {
 import { capitalizeFirstLetter, formatDateToLocal } from '@/app/services/utils';
 import Link from 'next/link';
 
-interface Props {
-  params: {
-    id: string;
-  };
-}
-
-export default async function MediaHistoryPage({ params }: Props) {
-  const mediaIdNum = Number(params.id);
+export default async function MediaHistoryPage({
+  params: promisedParams,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await promisedParams;
+  const mediaIdNum = Number(id);
 
   let history: HistoryRecord[] = [];
   try {
@@ -23,9 +22,14 @@ export default async function MediaHistoryPage({ params }: Props) {
     history = [];
   }
 
+  const mediaTitle =
+    history.length > 0 ? history[0].mediaTitle : 'Unknown Title';
+
   return (
     <div>
-      <h1 className='text-xl font-semibold mb-4'>Checkout History</h1>
+      <h1 className='text-xl font-semibold mb-4'>
+        Checkout History for: {mediaTitle}
+      </h1>
 
       {/* If you are returning data in the same shape as you shared, 
               you'll have an array of top-level objects, each with an `items` array. */}
