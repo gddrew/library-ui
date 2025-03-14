@@ -54,7 +54,11 @@ export default async function PatronCards({
                 <td className='px-3 py-2'>
                   {formatDateToLocal(card.lastUpdateDate)}
                 </td>
-                <td className='px-3 py-2'>{card.lastUsedDate ?? '—'}</td>
+                <td className='px-3 py-2'>
+                  {card.lastUsedDate
+                    ? formatDateToLocal(card.lastUsedDate)
+                    : '--'}
+                </td>
               </tr>
             ))}
           </tbody>

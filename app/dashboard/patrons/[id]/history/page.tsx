@@ -53,7 +53,7 @@ export default async function PatronHistoryPage({
                     {formatDateToLocal(item.dueDate)}
                   </td>
                   <td className='border-b p-2'>
-                    {formatDateToLocal(item.returnDate ?? 'Not Returned')}
+                    {item.returnDate ? formatDateToLocal(item.returnDate) : ''}
                   </td>
                   <td className='border-b p-2'>
                     {item.mediaDetails?.media_title}
