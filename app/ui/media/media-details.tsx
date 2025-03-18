@@ -319,7 +319,7 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
             </label>
             <select
               name='classificationCategory'
-              value={localData.classificationCategory}
+              value={localData.classificationCategory || ''}
               onChange={handleChange}
               required={localData.mediaType === 'Book'}
               disabled={!isEditing || localData.mediaType !== 'Book'}
@@ -340,7 +340,7 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
             </label>
             <select
               name='classificationSubCategory'
-              value={localData.classificationSubCategory}
+              value={localData.classificationSubCategory || ''}
               onChange={handleChange}
               required={localData.mediaType === 'Book'}
               disabled={!isEditing || localData.mediaType !== 'Book'}
