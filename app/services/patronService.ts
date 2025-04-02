@@ -1,3 +1,4 @@
+import axios from 'axios';
 import apiClient from './apiClient';
 import { CreatePatronPayload, Patron } from './definitions';
 
@@ -97,15 +98,38 @@ export async function getPatronByEmail(patronEmail: string) {
 }
 
 // Create a new patron
+export type CreatePatronResult =
+  | { success: true; data: Patron }
+  | { success: false; error: { message: string; errorCode: string } };
+
 export async function createPatron(
   patronData: CreatePatronPayload
-): Promise<Patron> {
+): Promise<CreatePatronResult> {
   try {
     const response = await apiClient.post(`/api/patrons`, patronData);
-    return response.data;
-  } catch (error) {
-    console.error('Error creating patron:', error);
-    throw error;
+    return { success: true, data: response.data };
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      if (
+        error.response?.status === 403 &&
+        error.response.data.errorCode === 'PATRON_ALREADY_EXISTS'
+      ) {
+        return {
+          success: false,
+          error: {
+            message: error.response.data.message,
+            errorCode: error.response.data.errorCode,
+          },
+        };
+      }
+    }
+    return {
+      success: false,
+      error: {
+        message: 'Failed to create patron.',
+        errorCode: 'UNKNOWN_ERROR',
+      },
+    };
   }
 }
 

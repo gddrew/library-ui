@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_LIBRARY_API_URL,
+  validateStatus: (status) => status >= 200 && status < 300,
   //withCredentials: true,
 });
 
