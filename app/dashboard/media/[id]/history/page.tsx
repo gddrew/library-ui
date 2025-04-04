@@ -3,7 +3,7 @@ import {
   HistoryRecord,
   LoanItem,
 } from '@/app/services/mediaService';
-import { capitalizeFirstLetter, formatDateToLocal } from '@/app/services/utils';
+import { formatDateToLocal } from '@/app/services/utils';
 import Link from 'next/link';
 
 export default async function MediaHistoryPage({
@@ -57,14 +57,10 @@ export default async function MediaHistoryPage({
                     {formatDateToLocal(loan.dueDate)}
                   </td>
                   <td className='border-b p-2'>
-                    {formatDateToLocal(
-                      loan.returnDate ? loan.returnDate : 'Not Returned'
-                    )}
+                    {formatDateToLocal(loan.returnDate ? loan.returnDate : '')}
                   </td>
                   <td className='border-b p-2'>{loan.patronName}</td>
-                  <td className='border-b p-2'>
-                    {capitalizeFirstLetter(loan.status)}
-                  </td>
+                  <td className='border-b p-2'>{loan.status}</td>
                 </tr>
               ))
             )}

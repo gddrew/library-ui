@@ -97,7 +97,7 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
         <h2 className='text-xl font-semibold mb-2 border-b pb-2'>
           General Information
         </h2>
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4'>
+        <div className='grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-4'>
           {/* Media ID */}
           <div>
             <label className='mb-1 block text-sm font-medium'>Media ID</label>
@@ -118,6 +118,18 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
               type='text'
               readOnly
               value={formatBarcode(localData.barCodeId)}
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm text-gray-500'
+            />
+          </div>
+
+          {/* Status */}
+          <div>
+            <label className='mb-1 block text-sm font-medium'>Status</label>
+            <input
+              name='mediaStatus'
+              type='text'
+              readOnly
+              value={localData.status}
               className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm text-gray-500'
             />
           </div>

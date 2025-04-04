@@ -45,6 +45,14 @@ export type Media = {
   isSensitive: boolean;
 };
 
+export type Loan = {
+  loanId: number;
+  created_date: Date;
+  patronId: number;
+  mediaId: number;
+  transactionType: string;
+};
+
 export type Invoice = {
   invoiceId: number;
   patronId: number;
@@ -68,12 +76,16 @@ export type CreateMediaPayload = Omit<
   'mediaId' | 'created_date' | 'barCodeId' | 'lastUpdateDate' | 'status'
 >;
 
+export type CreateLoanPayload = Omit<Loan, 'loanId' | 'created_date'>;
+
 // The minimal fields the client must send when creating a new Patron
 // Omit fields that the DB auto-generates or you don't want to supply
 export type CreatePatronPayload = Omit<
   Patron,
   'patronId' | 'status' | 'created_date' | 'lastUpdateDate'
 >;
+
+export type UpdateLoanPayload = Omit<Loan, 'loanId' | 'created_date'>;
 
 export type Revenue = {
   month: string;

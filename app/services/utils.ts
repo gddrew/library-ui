@@ -63,7 +63,7 @@ export const formatDateToLocal = (
   locale: string = 'en-US'
 ): string => {
   if (!dateStr) {
-    return 'N/A'; // Fallback for missing dates
+    return ''; // Fallback for missing dates
   }
 
   // If dateStr is a string in YYYY-MM-DD with no "T", append a T
