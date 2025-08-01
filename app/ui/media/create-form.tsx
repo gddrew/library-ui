@@ -7,6 +7,7 @@ import { Button } from '@/app/ui/button';
 import { addMedia } from '@/app/services/mediaService';
 import { useRouter } from 'next/navigation';
 import { subCategoryOptions } from '@/app/lib/subCategoryOptions';
+import { isAxiosError } from 'axios';
 
 function getTodayLocalDate() {
   const today = new Date();
@@ -74,7 +75,7 @@ export default function Form({}: { media: MediaField[] }) {
       requiredFields.push(
         'numberPages',
         'classificationCategory',
-        'classificationSubCategory'
+        'classificationSubcategory'
       );
     }
 
@@ -89,34 +90,49 @@ export default function Form({}: { media: MediaField[] }) {
       return;
     }
 
+    // Only include optional fields if present (avoid sending undefined)
+    const disposalDisp = formData.get('disposalDisposition') as string | null;
+
+    const payload = {
+      mediaTitle: formData.get('mediaTitle') as string,
+      authorName: formData.get('author') as string,
+      isbnId: formData.get('isbn') as string,
+      publicationYear: formData.get('publicationYear') as string,
+      mediaType,
+      mediaFormat: formData.get('mediaFormat') as string,
+      numberPages:
+        mediaType === 'Book'
+          ? parseInt(formData.get('numberPages') as string, 10) || 0
+          : 0,
+      classificationCategory:
+        mediaType === 'Book'
+          ? (formData.get('classificationCategory') as string)
+          : '',
+      classificationSubCategory:
+        mediaType === 'Book'
+          ? (formData.get('classificationSubcategory') as string)
+          : '',
+      publisherName: formData.get('publisherName') as string,
+      acquisitionDate: formData.get('acquisitionDate') as string,
+      ...(disposalDisp ? { disposalDisposition: disposalDisp } : {}),
+      isSensitive: formData.get('isSensitive') ? true : false,
+    };
+
+    console.log('create-media payload', payload);
+
     try {
-      await addMedia({
-        mediaTitle: formData.get('mediaTitle') as string,
-        authorName: formData.get('author') as string,
-        isbnId: formData.get('isbn') as string,
-        publicationYear: formData.get('publicationYear') as string,
-        mediaType,
-        mediaFormat: formData.get('mediaFormat') as string,
-        numberPages:
-          mediaType === 'Book'
-            ? parseInt(formData.get('numberPages') as string, 10)
-            : 0,
-        classificationCategory:
-          mediaType === 'Book'
-            ? (formData.get('classificationCategory') as string)
-            : '',
-        classificationSubCategory:
-          mediaType === 'Book'
-            ? (formData.get('classificationSubCategory') as string)
-            : '',
-        publisherName: formData.get('publisherName') as string,
-        acquisitionDate: formData.get('acquistionDate') as unknown as Date,
-        disposalDisposition: formData.get('disposalDisposation') as string,
-        isSensitive: formData.get('isSensitive') ? true : false,
-      });
+      await addMedia(payload);
       router.push('/dashboard/media');
-    } catch (err) {
-      console.error('Failed to create media', err);
+    } catch (err: unknown) {
+      if (isAxiosError(err)) {
+        console.error('Create media failed:', {
+          status: err.response?.status,
+          data: err.response?.data,
+          headers: err.response?.headers,
+        });
+      } else {
+        console.error('Create media failed:', (err as Error)?.message || err);
+      }
     }
   }
 
@@ -216,7 +232,7 @@ export default function Form({}: { media: MediaField[] }) {
             placeholder='Enter a publisher'
             required
             onBlur={(e) => validateField(e.target.name, e.target.value)}
-            className={`peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm placeholder-gray-500' ${
+            className={`peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm placeholder-gray-500 ${
               errors.publisherName ? 'border-red-500' : 'border-gray-200'
             }`}
           />
@@ -250,7 +266,7 @@ export default function Form({}: { media: MediaField[] }) {
             placeholder='Enter an author'
             required
             onBlur={(e) => validateField(e.target.name, e.target.value)}
-            className={`peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm placeholder-gray-500' ${
+            className={`peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm placeholder-gray-500 ${
               errors.author ? 'border-red-500' : 'border-gray-200'
             }`}
           />
@@ -293,7 +309,7 @@ export default function Form({}: { media: MediaField[] }) {
             placeholder='Enter publication year'
             required
             onBlur={(e) => validateField(e.target.name, e.target.value)}
-            className={`peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm placeholder-gray-500' ${
+            className={`peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm placeholder-gray-500 ${
               errors.publicationYear ? 'border-red-500' : 'border-gray-200'
             }`}
           />

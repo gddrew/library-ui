@@ -198,6 +198,23 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
             />
           </div>
 
+          {/* Disposal Disposition */}
+          <div>
+            <label className='mb-1 block text-sm font-medium'>
+              Disposal Disposition
+            </label>
+            <select
+              name='disposalDisposition'
+              value={localData.disposalDisposition}
+              onChange={handleChange}
+              disabled={!isEditing}
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+            >
+              <option value='School'>Art school library</option>
+              <option value='Sell'>Sell or Donate</option>
+            </select>
+          </div>
+
           {/* Sensitive Content */}
           <div className='flex items-center'>
             <input

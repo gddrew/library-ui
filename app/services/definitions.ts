@@ -39,7 +39,7 @@ export type Media = {
   classificationSubCategory: string;
   publisherName: string;
   disposalDisposition: string;
-  acquisitionDate: Date;
+  acquisitionDate: string;
   lastUpdateDate: Date;
   status: string;
   isSensitive: boolean;
@@ -73,8 +73,16 @@ export type CreateInvoicePayload = Omit<
 
 export type CreateMediaPayload = Omit<
   Media,
-  'mediaId' | 'created_date' | 'barCodeId' | 'lastUpdateDate' | 'status'
->;
+  | 'mediaId'
+  | 'created_date'
+  | 'barCodeId'
+  | 'lastUpdateDate'
+  | 'status'
+  | 'disposalDisposition'
+> & {
+  acquisitionDate: string;
+  disposalDisposition?: string;
+};
 
 export type CreateLoanPayload = Omit<Loan, 'loanId' | 'created_date'>;
 
