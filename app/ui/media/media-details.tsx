@@ -11,6 +11,8 @@ import {
   DISPOSAL_OPTIONS,
   formatBarcode,
   formatISBN13,
+  MEDIA_TYPE,
+  toDateInputValue,
 } from '@/app/services/utils';
 
 export default function MediaDetails({ media }: { media: MediaForm }) {
@@ -20,7 +22,13 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
   const [isEditing, setIsEditing] = useState(false);
 
   // Local state for form data
-  const [localData, setLocalData] = useState({ ...media });
+  type LocalMedia = Omit<MediaForm, 'acquisitionDate'> & {
+    acquisitionDate: string;
+  };
+  const [localData, setLocalData] = useState<LocalMedia>({
+    ...media,
+    acquisitionDate: toDateInputValue(media.acquisitionDate),
+  });
 
   // Confirmation for deletion
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -31,7 +39,10 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
   }
   function handleCancel() {
     setIsEditing(false);
-    setLocalData({ ...media }); // Revert changes
+    setLocalData({
+      ...media,
+      acquisitionDate: toDateInputValue(media.acquisitionDate),
+    }); // Revert changes
   }
 
   // Handle input changes
@@ -64,7 +75,11 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     try {
-      await updateMedia(media.mediaId, localData);
+      const payload = {
+        ...localData,
+        acquisitionDate: localData.acquisitionDate || '',
+      };
+      await updateMedia(media.mediaId, payload);
       setIsEditing(false);
     } catch (err) {
       console.error('Failed to update media', err);
@@ -173,9 +188,11 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
               disabled={!isEditing}
               className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
             >
-              <option value='Book'>Book</option>
-              <option value='Video'>Video</option>
-              <option value='Audio Recording'>Audio Recording</option>
+              {MEDIA_TYPE.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -187,15 +204,7 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
             <input
               type='date'
               name='acquisitionDate'
-              value={
-                localData.acquisitionDate
-                  ? localData.acquisitionDate instanceof Date
-                    ? localData.acquisitionDate.toISOString().split('T')[0]
-                    : new Date(localData.acquisitionDate)
-                        .toISOString()
-                        .split('T')[0]
-                  : ''
-              }
+              value={localData.acquisitionDate || ''}
               onChange={handleChange}
               disabled={!isEditing}
               className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'

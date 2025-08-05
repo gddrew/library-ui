@@ -26,6 +26,14 @@ export function formatBarcode(barcodeId: string | number): string {
   //39900100000014
 }
 
+// Media type
+export const MEDIA_TYPE = [
+  { value: 'Book', label: 'Book' },
+  { value: 'Video', label: 'Video' },
+  { value: 'Audio Recording', label: 'Audio Recording' },
+] as const;
+export type MediaType = (typeof MEDIA_TYPE)[number]['value'];
+
 // Media disposal disposition
 export const DISPOSAL_OPTIONS = [
   { value: 'Art school library', label: 'Art school library' },
@@ -93,6 +101,15 @@ export const formatDateToLocal = (
   const formattedDated = formatter.format(date);
   const [month, day, year] = formattedDated.split('/');
   return `${month}/${day}/${year}`;
+};
+
+// Format date string
+export const toDateInputValue = (d?: string | Date | null) => {
+  if (!d) return '';
+  const date = typeof d === 'string' ? new Date(d) : d;
+  const z = new Date(date);
+  z.setMinutes(z.getMinutes() - z.getTimezoneOffset());
+  return z.toISOString().split('T')[0];
 };
 
 export type Revenue = {

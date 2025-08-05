@@ -8,7 +8,12 @@ import { addMedia } from '@/app/services/mediaService';
 import { useRouter } from 'next/navigation';
 import { subCategoryOptions } from '@/app/lib/subCategoryOptions';
 import { isAxiosError } from 'axios';
-import { DISPOSAL_OPTIONS, DisposalDisposition } from '@/app/services/utils';
+import {
+  DISPOSAL_OPTIONS,
+  DisposalDisposition,
+  MEDIA_TYPE,
+  MediaType,
+} from '@/app/services/utils';
 
 function getTodayLocalDate() {
   const today = new Date();
@@ -19,7 +24,7 @@ function getTodayLocalDate() {
 
 export default function Form({}: { media: MediaField[] }) {
   const router = useRouter();
-  const [mediaType, setMediaType] = useState('Book');
+  const [mediaType, setMediaType] = useState<MediaType>('Book');
   const [disposalDisposition, setDisposalDisposition] =
     useState<DisposalDisposition>('Art school library');
   const [classificationCategory, setClassificationCategory] = useState<
@@ -172,9 +177,9 @@ export default function Form({}: { media: MediaField[] }) {
           <select
             id='mediaType'
             name='mediaType'
-            defaultValue='Book'
+            value={mediaType}
             onChange={(e) => {
-              const selectedType = e.target.value;
+              const selectedType = e.target.value as MediaType;
               setMediaType(selectedType);
               if (selectedType !== 'Book') {
                 setClassificationCategory('');
@@ -183,9 +188,11 @@ export default function Form({}: { media: MediaField[] }) {
             }}
             className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
           >
-            <option value='Book'>Book</option>
-            <option value='Video'>Video</option>
-            <option value='Audio Recording'>Audio Recording</option>
+            {MEDIA_TYPE.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
           </select>
         </div>
 
