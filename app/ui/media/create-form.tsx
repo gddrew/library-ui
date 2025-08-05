@@ -93,9 +93,6 @@ export default function Form({}: { media: MediaField[] }) {
       return;
     }
 
-    // Only include optional fields if present (avoid sending undefined)
-    const disposalDisp = formData.get('disposalDisposition') as string | null;
-
     const payload = {
       mediaTitle: formData.get('mediaTitle') as string,
       authorName: formData.get('author') as string,
