@@ -26,6 +26,13 @@ export function formatBarcode(barcodeId: string | number): string {
   //39900100000014
 }
 
+// Media disposal disposition
+export const DISPOSAL_OPTIONS = [
+  { value: 'Art school library', label: 'Art school library' },
+  { value: 'Sell or donate', label: 'Sell or Donate' },
+] as const;
+export type DisposalDisposition = (typeof DISPOSAL_OPTIONS)[number]['value'];
+
 // Format telephone numbers for display
 export function formatTelephone(telephone: string): string {
   // Strip out non-digit characters, just in case

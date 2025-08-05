@@ -7,7 +7,11 @@ import { updateMedia, deleteMedia } from '@/app/services/mediaService';
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 import { subCategoryOptions } from '@/app/lib/subCategoryOptions';
-import { formatBarcode, formatISBN13 } from '@/app/services/utils';
+import {
+  DISPOSAL_OPTIONS,
+  formatBarcode,
+  formatISBN13,
+} from '@/app/services/utils';
 
 export default function MediaDetails({ media }: { media: MediaForm }) {
   const router = useRouter();
@@ -210,8 +214,11 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
               disabled={!isEditing}
               className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
             >
-              <option value='School'>Art school library</option>
-              <option value='Sell'>Sell or Donate</option>
+              {DISPOSAL_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
             </select>
           </div>
 

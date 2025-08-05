@@ -8,6 +8,7 @@ import { addMedia } from '@/app/services/mediaService';
 import { useRouter } from 'next/navigation';
 import { subCategoryOptions } from '@/app/lib/subCategoryOptions';
 import { isAxiosError } from 'axios';
+import { DISPOSAL_OPTIONS, DisposalDisposition } from '@/app/services/utils';
 
 function getTodayLocalDate() {
   const today = new Date();
@@ -19,6 +20,8 @@ function getTodayLocalDate() {
 export default function Form({}: { media: MediaField[] }) {
   const router = useRouter();
   const [mediaType, setMediaType] = useState('Book');
+  const [disposalDisposition, setDisposalDisposition] =
+    useState<DisposalDisposition>('Art school library');
   const [classificationCategory, setClassificationCategory] = useState<
     'Fiction' | 'Non-Fiction' | ''
   >('');
@@ -114,7 +117,7 @@ export default function Form({}: { media: MediaField[] }) {
           : '',
       publisherName: formData.get('publisherName') as string,
       acquisitionDate: formData.get('acquisitionDate') as string,
-      ...(disposalDisp ? { disposalDisposition: disposalDisp } : {}),
+      ...(disposalDisposition ? { disposalDisposition } : {}),
       isSensitive: formData.get('isSensitive') ? true : false,
     };
 
@@ -142,7 +145,7 @@ export default function Form({}: { media: MediaField[] }) {
       className='max-w-4xl ml bg-gray-50 p-6 rounded-md'
     >
       <h2 className='text-xl font-semibold mb-4'>General Information</h2>
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4'>
         {/* Media Title */}
         <div className='flex flex-col'>
           <label htmlFor='mediaTitle' className='text-sm font-medium mb-1'>
@@ -202,6 +205,31 @@ export default function Form({}: { media: MediaField[] }) {
             defaultValue={getTodayLocalDate()}
             required
           />
+        </div>
+
+        {/* Disposal Disposition */}
+        <div className='flex flex-col'>
+          <label
+            htmlFor='disposalDisposition'
+            className='text-sm font-medium mb-1'
+          >
+            Disposal Disposition
+          </label>
+          <select
+            id='disposalDisposition'
+            name='disposalDisposition'
+            value={disposalDisposition}
+            onChange={(e) =>
+              setDisposalDisposition(e.target.value as DisposalDisposition)
+            }
+            className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+          >
+            {DISPOSAL_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Sensitive */}
