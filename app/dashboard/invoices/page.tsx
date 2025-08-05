@@ -11,6 +11,8 @@ import { listInvoices } from '@/app/services/invoiceService';
 import { useSearchParams } from 'next/navigation';
 import { useDebounce } from '@/app/lib/useDebounce';
 
+export const dynamic = 'force-dynamic'; // disables SSG for this page
+
 export default function InvoicesPage() {
   const searchParams = useSearchParams();
   const query = searchParams.get('query') || '';
