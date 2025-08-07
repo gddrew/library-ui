@@ -11,6 +11,9 @@ import { listPatrons } from '@/app/services/patronService';
 import { useSearchParams } from 'next/navigation';
 import { useDebounce } from '@/app/lib/useDebounce';
 
+export const dynamic = 'force-dynamic'; // disables SSG for this page
+export const revalidate = 0;
+
 export default function PatronPage() {
   const searchParams = useSearchParams();
   const query = searchParams.get('query') || '';
