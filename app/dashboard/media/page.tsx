@@ -11,8 +11,7 @@ import { listMedia } from '@/app/services/mediaService';
 import { useSearchParams } from 'next/navigation';
 import { useDebounce } from '@/app/lib/useDebounce';
 
-export const dynamic = 'force-dynamic'; // disables SSG for this page
-export const revalidate = 0;
+// export const dynamic = 'force-dynamic'; // disables SSG for this page
 
 export default function MediaPage() {
   const searchParams = useSearchParams();
