@@ -1,3 +1,20 @@
+export function baseUrl() {
+  // 1) One canonical server-side var for SSR/build/runtime:
+  const serverUrl = process.env.LIBRARY_API_URL;
+
+  // 2) The browser-safe var for client code:
+  const clientUrl = process.env.NEXT_PUBLIC_LIBRARY_API_URL;
+  const inBrowser =
+    typeof window !== 'undefined' && typeof document !== 'undefined';
+
+  // Prefer explicit envs; fall back to localhost for dev only.
+  if (inBrowser) {
+    return clientUrl || 'http://localhost:8080';
+  } else {
+    return serverUrl || 'http://localhost:8080';
+  }
+}
+
 // Format ISBN numbers
 export function formatISBN13(isbn: string | number): string {
   const isbnStr = isbn.toString().replace(/[^0-9]/g, '');
@@ -25,21 +42,6 @@ export function formatBarcode(barcodeId: string | number): string {
   return `${prefix}-${library}-${sequence}-${checkDigit}`;
   //39900100000014
 }
-
-// Media type
-export const MEDIA_TYPE = [
-  { value: 'Book', label: 'Book' },
-  { value: 'Video', label: 'Video' },
-  { value: 'Audio Recording', label: 'Audio Recording' },
-] as const;
-export type MediaType = (typeof MEDIA_TYPE)[number]['value'];
-
-// Media disposal disposition
-export const DISPOSAL_OPTIONS = [
-  { value: 'Art school library', label: 'Art school library' },
-  { value: 'Sell or donate', label: 'Sell or Donate' },
-] as const;
-export type DisposalDisposition = (typeof DISPOSAL_OPTIONS)[number]['value'];
 
 // Format telephone numbers for display
 export function formatTelephone(telephone: string): string {
@@ -112,25 +114,22 @@ export const toDateInputValue = (d?: string | Date | null) => {
   return z.toISOString().split('T')[0];
 };
 
-export type Revenue = {
-  month: string;
-  revenue: number;
-};
+// Media type
+export const MEDIA_TYPE = [
+  { value: 'Book', label: 'Book' },
+  { value: 'Video', label: 'Video' },
+  { value: 'Audio Recording', label: 'Audio Recording' },
+] as const;
+export type MediaType = (typeof MEDIA_TYPE)[number]['value'];
 
-export const generateYAxis = (revenue: Revenue[]) => {
-  // Calculate what labels we need to display on the y-axis
-  // based on highest record and in 1000s
-  const yAxisLabels = [];
-  const highestRecord = Math.max(...revenue.map((month) => month.revenue));
-  const topLabel = Math.ceil(highestRecord / 1000) * 1000;
+// Media disposal disposition
+export const DISPOSAL_OPTIONS = [
+  { value: 'Art school library', label: 'Art school library' },
+  { value: 'Sell or donate', label: 'Sell or Donate' },
+] as const;
+export type DisposalDisposition = (typeof DISPOSAL_OPTIONS)[number]['value'];
 
-  for (let i = topLabel; i >= 0; i -= 1000) {
-    yAxisLabels.push(`$${i / 1000}K`);
-  }
-
-  return { yAxisLabels, topLabel };
-};
-
+// Pagination
 export const generatePagination = (
   currentPage: number,
   totalPages: number,
@@ -182,3 +181,25 @@ export const generatePagination = (
   prefetchPage(currentPage + 2); // Prefetch two pages after current
   return pages;
 };
+
+// Stuff for dashboard that isn't used
+/*
+export type Revenue = {
+  month: string;
+  revenue: number;
+};
+
+export const generateYAxis = (revenue: Revenue[]) => {
+  // Calculate what labels we need to display on the y-axis
+  // based on highest record and in 1000s
+  const yAxisLabels = [];
+  const highestRecord = Math.max(...revenue.map((month) => month.revenue));
+  const topLabel = Math.ceil(highestRecord / 1000) * 1000;
+
+  for (let i = topLabel; i >= 0; i -= 1000) {
+    yAxisLabels.push(`$${i / 1000}K`);
+  }
+
+  return { yAxisLabels, topLabel };
+};
+*/

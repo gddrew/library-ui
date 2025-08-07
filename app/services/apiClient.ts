@@ -1,24 +1,10 @@
 import axios from 'axios';
-//import Cookies from 'js-cookie';
+import { baseUrl } from './utils';
 
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_LIBRARY_API_URL,
-  validateStatus: (status) => status >= 200 && status < 300,
-  //withCredentials: true,
+  baseURL: baseUrl(),
+  timeout: 10000,
+  headers: { 'Content-Type': 'application/json' },
 });
-
-// Interceptor to attach the token
-// apiClient.interceptors.request.use((config) => {
-//   const token = Cookies.get('token');
-//   console.log('Axios Interceptor -  Retrieved Token:', token);
-
-//   if (token) {
-//     config.headers.Authorization = `Bearer ${token}`;
-//     console.log('Authorization Header Set:', config.headers.Authorization);
-//   } else {
-//     console.warn('No token found in cookies. Authorization header not set.');
-//   }
-//   return config;
-// });
 
 export default apiClient;
