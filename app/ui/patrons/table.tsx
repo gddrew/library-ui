@@ -1,9 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { formatTelephone, capitalizeFirstLetter } from '@/app/services/utils';
-import { UpdatePatron } from '@/app/ui/patrons/buttons';
 import { Patron } from '@/app/services/definitions';
 import { formatDateToLocal } from '@/app/services/utils';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 // Define the props for your Table
 type PatronTableProps = {
@@ -14,6 +14,13 @@ type PatronTableProps = {
 };
 
 export default function PatronTable({ patrons }: PatronTableProps) {
+  // Enable useSearchParams to remember page user was on when drilling into an item
+  const pathname = usePathname(); // "/dashboard/media"
+  const params = useSearchParams();
+  const from = params.toString()
+    ? `${pathname}?${params.toString()}`
+    : pathname;
+
   return (
     <div className='overflow-x-auto mt-6 flow-root'>
       <div className='inline-block min-w-full align-middle'>
@@ -28,23 +35,35 @@ export default function PatronTable({ patrons }: PatronTableProps) {
                 <div className='flex items-center justify-between border-b pb-4'>
                   <div>
                     <div className='mb-2 flex items-center'>
-                      <p>{patron.patronId}</p>
+                      <p className='text-sm'>{patron.patronId}</p>
                     </div>
-                    <p className='text-sm text-gray-500'>{patron.patronName}</p>
+                    <p className='text-md font-medium'>{patron.patronName}</p>
                   </div>
                   {/* <PatronStatus status={patron.status} /> */}
                 </div>
                 <div className='flex w-full items-center justify-between pt-4'>
                   <div>
-                    <p className='text-xl font-medium'>{patron.emailAddress}</p>
-                    <p className='text-xl font-medium'>
+                    <p className='text-sm text-gray-500'>
+                      {patron.emailAddress}
+                    </p>
+                    <p className='text-sm text-gray-500'>
                       {patron.telephoneHome
                         ? formatTelephone(patron.telephoneHome)
                         : '--'}
                     </p>
                   </div>
                   <div className='flex justify-end gap-2'>
-                    <UpdatePatron patronId={patron.patronId} />
+                    <Link
+                      href={{
+                        pathname: `/dashboard/patrons/${patron.patronId}}`,
+                        query: { from },
+                      }}
+                      // optional: keep scroll position when returning via link
+                      scroll={false}
+                      className='inline-flex items-center gap-1 rounded-md border px-3 py-1 hover:bg-gray-100'
+                    >
+                      View
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -79,7 +98,12 @@ export default function PatronTable({ patrons }: PatronTableProps) {
               {patrons?.map((patron) => (
                 <tr key={patron.patronId} className='border-b text-sm'>
                   <td className='px-6 py-3'>
-                    <Link href={`/dashboard/patrons/${patron.patronId}`}>
+                    <Link
+                      href={{
+                        pathname: `/dashboard/patrons/${patron.patronId}`,
+                        query: { from },
+                      }}
+                    >
                       {patron.patronId}
                     </Link>
                   </td>

@@ -5,7 +5,6 @@ import Link from 'next/link';
 import MediaStatus from '@/app/ui/media/status';
 import { formatDateToLocal, formatISBN13 } from '@/app/services/utils';
 import { Media } from '@/app/services/definitions';
-import { UpdateMedia } from '@/app/ui/media/buttons';
 import { usePathname, useSearchParams } from 'next/navigation';
 
 // Define the props for your Table
@@ -45,10 +44,7 @@ export default function MediaTable({ media }: MediaTableProps) {
                 </div>
                 <div className='flex w-full items-center justify-between pt-4'>
                   <div>
-                    <p className='text-sm'>{media.authorName}</p>
-                  </div>
-                  <div className='flex justify-end gap-2'>
-                    <UpdateMedia mediaId={media.mediaId} />
+                    <p className='text-sm text-gray-500'>{media.authorName}</p>
                   </div>
                   <div className='flex justify-end gap-2'>
                     <Link
