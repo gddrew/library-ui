@@ -1,5 +1,8 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
+import PatronStatus from '@/app/ui/patrons/status';
 import { formatTelephone, capitalizeFirstLetter } from '@/app/services/utils';
 import { Patron } from '@/app/services/definitions';
 import { formatDateToLocal } from '@/app/services/utils';
@@ -15,7 +18,7 @@ type PatronTableProps = {
 
 export default function PatronTable({ patrons }: PatronTableProps) {
   // Enable useSearchParams to remember page user was on when drilling into an item
-  const pathname = usePathname(); // "/dashboard/media"
+  const pathname = usePathname(); // "/dashboard/patrons"
   const params = useSearchParams();
   const from = params.toString()
     ? `${pathname}?${params.toString()}`
@@ -39,7 +42,7 @@ export default function PatronTable({ patrons }: PatronTableProps) {
                     </div>
                     <p className='text-md font-medium'>{patron.patronName}</p>
                   </div>
-                  {/* <PatronStatus status={patron.status} /> */}
+                  <PatronStatus status={patron.status} />
                 </div>
                 <div className='flex w-full items-center justify-between pt-4'>
                   <div>
@@ -55,11 +58,11 @@ export default function PatronTable({ patrons }: PatronTableProps) {
                   <div className='flex justify-end gap-2'>
                     <Link
                       href={{
-                        pathname: `/dashboard/patrons/${patron.patronId}}`,
+                        pathname: `/dashboard/patrons/${patron.patronId}`,
                         query: { from },
                       }}
                       // optional: keep scroll position when returning via link
-                      scroll={false}
+                      scroll={true}
                       className='inline-flex items-center gap-1 rounded-md border px-3 py-1 hover:bg-gray-100'
                     >
                       View

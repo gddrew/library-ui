@@ -37,7 +37,7 @@ export default function MediaStatus({ status }: { status: string }) {
           <XCircleIcon className='ml-1 w-4 text-white' />
         </>
       ) : null}
-      {status === 'AVAILABLE' ? (
+      {status === 'OTHER' ? (
         <>
           Other
           <LockClosedIcon className='ml-1 w-4 text-white' />
