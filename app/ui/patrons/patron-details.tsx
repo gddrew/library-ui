@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { PatronForm } from '@/app/services/definitions';
 import { updatePatron, deletePatron } from '@/app/services/patronService';
 import Link from 'next/link';
@@ -12,6 +12,30 @@ import { CreditCardIcon } from '@heroicons/react/24/outline';
 
 export default function PatronDetails({ patron }: { patron: PatronForm }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const from = searchParams.get('from') ?? null;
+  const backHref = React.useMemo(() => {
+    // keep only the params your list page understands
+    const allow = ['page', 'pageSize', 'q', 'sort', 'filter'];
+    const out = new URLSearchParams();
+    for (const key of allow) {
+      const val = searchParams.get(key);
+      if (val) out.set(key, val);
+    }
+    return out.toString()
+      ? `/dashboard/patrons?${out.toString()}`
+      : '/dashboard/patrons';
+  }, [searchParams]);
+
+  function handleBack() {
+    if (from) {
+      router.push(from); // go straight back to the list you came from
+    } else if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push(backHref); // safe fallback
+    }
+  }
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -110,7 +134,10 @@ export default function PatronDetails({ patron }: { patron: PatronForm }) {
           {/* Checkout History Link */}
           <div className='mt-6'>
             <Link
-              href={`/dashboard/patrons/${patron.patronId}/history`}
+              href={{
+                pathname: `/dashboard/patrons/${patron.patronId}/history`,
+                query: from ? { from } : undefined,
+              }}
               className='inline-block px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600'
             >
               View Loan History
@@ -336,12 +363,13 @@ export default function PatronDetails({ patron }: { patron: PatronForm }) {
               >
                 Edit
               </button>
-              <Link
-                href='/dashboard/patrons'
+              <button
+                type='button'
+                onClick={handleBack}
                 className='flex h-10 items-center rounded-lg bg-gray-100 px-4 py-1 text-gray-700 hover:bg-gray-200'
               >
                 Back
-              </Link>
+              </button>
               <button
                 type='button'
                 onClick={handleShowDelete}
