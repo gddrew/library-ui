@@ -18,6 +18,7 @@ import {
 export default function MediaDetails({ media }: { media: MediaForm }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const from = searchParams.get('from') ?? null;
   const backHref = React.useMemo(() => {
     // keep only the params your list page understands
     const allow = ['page', 'pageSize', 'q', 'sort', 'filter'];
@@ -30,6 +31,16 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
       ? `/dashboard/media?${out.toString()}`
       : '/dashboard/media';
   }, [searchParams]);
+
+  function handleBack() {
+    if (from) {
+      router.push(from); // go straight back to the list you came from
+    } else if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push(backHref); // safe fallback
+    }
+  }
 
   // Controls editing state (read-only by default)
   const [isEditing, setIsEditing] = useState(false);
@@ -169,7 +180,10 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
           {/* Checkout History Link */}
           <div className='mt-6'>
             <Link
-              href={`/dashboard/media/${media.mediaId}/history`}
+              href={{
+                pathname: `/dashboard/media/${media.mediaId}/history`,
+                query: from ? { from } : undefined,
+              }}
               className='inline-block px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600'
             >
               View Checkout History
@@ -438,19 +452,9 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
               >
                 Edit
               </button>
-              {/* <Link
-                href='/dashboard/media'
-                className='flex h-10 items-center rounded-lg bg-gray-100 px-4 py-1 text-gray-700 hover:bg-gray-200'
-              >
-                Back
-              </Link> */}
               <button
                 type='button'
-                onClick={() => {
-                  // Prefer going back (preserves scroll); fall back to a URL with params.
-                  if (window.history.length > 1) router.back();
-                  else router.push(backHref);
-                }}
+                onClick={handleBack}
                 className='flex h-10 items-center rounded-lg bg-gray-100 px-4 py-1 text-gray-700 hover:bg-gray-200'
               >
                 Back

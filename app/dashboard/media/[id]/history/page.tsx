@@ -8,11 +8,15 @@ import Link from 'next/link';
 
 export default async function MediaHistoryPage({
   params: promisedParams,
+  searchParams: promisedSearchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ from?: string }>;
 }) {
   const { id } = await promisedParams;
+  const { from } = await promisedSearchParams;
   const mediaIdNum = Number(id);
+  const fromStr = typeof from === 'string' ? from : undefined;
 
   let history: HistoryRecord[] = [];
   try {
@@ -71,13 +75,29 @@ export default async function MediaHistoryPage({
       )}
 
       <div className='mt-4'>
-        {/* Option 1: Use Link to go back to Media Details (if route is /dashboard/media/:mediaId) */}
         <Link
-          href={`/dashboard/media/${mediaIdNum}`}
+          href={
+            from
+              ? {
+                  pathname: `/dashboard/media/${mediaIdNum}`,
+                  query: { from: fromStr },
+                }
+              : `/dashboard/media/${mediaIdNum}`
+          }
           className='inline-block px-4 py-2 rounded bg-gray-200 hover:bg-gray-300'
         >
           Back to Details
         </Link>
+
+        {/* Direct 'Back to List' that skips Details */}
+        {from && (
+          <Link
+            href={from}
+            className='ml-2 inline-block px-4 py-2 rounded bg-gray-200 hover:bg-gray-300'
+          >
+            Back to List
+          </Link>
+        )}
       </div>
     </div>
   );

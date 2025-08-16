@@ -1,10 +1,12 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import MediaStatus from '@/app/ui/media/status';
 import { formatDateToLocal, formatISBN13 } from '@/app/services/utils';
 import { Media } from '@/app/services/definitions';
 import { UpdateMedia } from '@/app/ui/media/buttons';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 // Define the props for your Table
 type MediaTableProps = {
@@ -15,8 +17,11 @@ type MediaTableProps = {
 
 export default function MediaTable({ media }: MediaTableProps) {
   // Enable useSearchParams to remember page user was on when drilling into an item
+  const pathname = usePathname(); // "/dashboard/media"
   const params = useSearchParams();
-  const queryObj = Object.fromEntries(params); // remembers page, q, sort, etc.
+  const from = params.toString()
+    ? `${pathname}?${params.toString()}`
+    : pathname;
 
   return (
     <div className='overflow-x-auto mt-6 flow-root'>
@@ -49,11 +54,11 @@ export default function MediaTable({ media }: MediaTableProps) {
                     <Link
                       href={{
                         pathname: `/dashboard/media/${media.mediaId}`,
-                        query: queryObj,
+                        query: { from },
                       }}
-                      className='inline-flex items-center gap-1 rounded-md border px-3 py-1 hover:bg-gray-100'
                       // optional: keep scroll position when returning via link
                       scroll={false}
+                      className='inline-flex items-center gap-1 rounded-md border px-3 py-1 hover:bg-gray-100'
                     >
                       View
                     </Link>
@@ -91,7 +96,12 @@ export default function MediaTable({ media }: MediaTableProps) {
               {media?.map((media) => (
                 <tr key={media.mediaId} className='border-b text-sm'>
                   <td className='px-6 py-3'>
-                    <Link href={`/dashboard/media/${media.mediaId}`}>
+                    <Link
+                      href={{
+                        pathname: `/dashboard/media/${media.mediaId}`,
+                        query: { from },
+                      }}
+                    >
                       {media.mediaId}
                     </Link>
                   </td>
