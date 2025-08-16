@@ -1,9 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
-import { UpdateMedia } from '@/app/ui/media/buttons';
 import MediaStatus from '@/app/ui/media/status';
-import { Media } from '@/app/services/definitions';
 import { formatDateToLocal, formatISBN13 } from '@/app/services/utils';
+import { Media } from '@/app/services/definitions';
+import { UpdateMedia } from '@/app/ui/media/buttons';
+import { useSearchParams } from 'next/navigation';
 
 // Define the props for your Table
 type MediaTableProps = {
@@ -13,6 +14,10 @@ type MediaTableProps = {
 };
 
 export default function MediaTable({ media }: MediaTableProps) {
+  // Enable useSearchParams to remember page user was on when drilling into an item
+  const params = useSearchParams();
+  const queryObj = Object.fromEntries(params); // remembers page, q, sort, etc.
+
   return (
     <div className='overflow-x-auto mt-6 flow-root'>
       <div className='inline-block min-w-full align-middle'>
@@ -27,24 +32,28 @@ export default function MediaTable({ media }: MediaTableProps) {
                 <div className='flex items-center justify-between border-b pb-4'>
                   <div>
                     <div className='mb-2 flex items-center'>
-                      <p>{media.mediaId}</p>
+                      <p className='text-sm'>{media.mediaId}</p>
                     </div>
-                    <p className='text-sm text-gray-500'>{media.mediaTitle}</p>
+                    <p className='text-md font-medium'>{media.mediaTitle}</p>
                   </div>
                   <MediaStatus status={media.status} />
                 </div>
                 <div className='flex w-full items-center justify-between pt-4'>
                   <div>
-                    <p className='text-xl font-medium'>{media.authorName}</p>
-                    <p className='text-xl font-medium'>{media.status}</p>
+                    <p className='text-sm'>{media.authorName}</p>
                   </div>
                   <div className='flex justify-end gap-2'>
                     <UpdateMedia mediaId={media.mediaId} />
                   </div>
                   <div className='flex justify-end gap-2'>
                     <Link
-                      href={`/dashboard/media/${media.mediaId}`}
+                      href={{
+                        pathname: `/dashboard/media/${media.mediaId}`,
+                        query: queryObj,
+                      }}
                       className='inline-flex items-center gap-1 rounded-md border px-3 py-1 hover:bg-gray-100'
+                      // optional: keep scroll position when returning via link
+                      scroll={false}
                     >
                       View
                     </Link>

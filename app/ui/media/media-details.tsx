@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { MediaForm } from '@/app/services/definitions';
 import { updateMedia, deleteMedia } from '@/app/services/mediaService';
 import Link from 'next/link';
@@ -17,6 +17,19 @@ import {
 
 export default function MediaDetails({ media }: { media: MediaForm }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const backHref = React.useMemo(() => {
+    // keep only the params your list page understands
+    const allow = ['page', 'pageSize', 'q', 'sort', 'filter'];
+    const out = new URLSearchParams();
+    for (const key of allow) {
+      const val = searchParams.get(key);
+      if (val) out.set(key, val);
+    }
+    return out.toString()
+      ? `/dashboard/media?${out.toString()}`
+      : '/dashboard/media';
+  }, [searchParams]);
 
   // Controls editing state (read-only by default)
   const [isEditing, setIsEditing] = useState(false);
@@ -425,12 +438,23 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
               >
                 Edit
               </button>
-              <Link
+              {/* <Link
                 href='/dashboard/media'
                 className='flex h-10 items-center rounded-lg bg-gray-100 px-4 py-1 text-gray-700 hover:bg-gray-200'
               >
                 Back
-              </Link>
+              </Link> */}
+              <button
+                type='button'
+                onClick={() => {
+                  // Prefer going back (preserves scroll); fall back to a URL with params.
+                  if (window.history.length > 1) router.back();
+                  else router.push(backHref);
+                }}
+                className='flex h-10 items-center rounded-lg bg-gray-100 px-4 py-1 text-gray-700 hover:bg-gray-200'
+              >
+                Back
+              </button>
               <button
                 type='button'
                 onClick={handleShowDelete}
