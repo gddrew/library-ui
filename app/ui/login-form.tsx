@@ -10,9 +10,6 @@ import {
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
-import apiClient from '../services/apiClient';
-import Cookies from 'js-cookie';
 
 export default function LoginForm() {
   const [username, setUsername] = useState('');
@@ -22,43 +19,27 @@ export default function LoginForm() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('handleLogin called');
+    console.log('SUBMIT fired'); // trying to verify
     setError('');
 
     try {
-      console.log('Attempting login with:', { username, password });
-      const response = await apiClient.post('/api/auth/login', {
-        username,
-        password,
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ username, password }),
       });
 
-      console.log('Response received:', response);
-      const token = response.data;
-
-      if (response.status === 200 && response.data) {
-        console.log('Login successful. Token received:', response.data);
-
-        // Store the JWT token
-        Cookies.set('token', token, {
-          secure: false,
-          sameSite: 'strict',
-        });
-        console.log('Token stored in cookie:', token);
-
-        // Redirect to the dashboard or another protected route
+      if (res.ok) {
         router.push('/dashboard');
+      } else if (res.status === 401) {
+        setError('Invalid username or password.');
       } else {
-        console.error('Unexpected response format:', response);
         setError('Failed to log in. Please try again.');
       }
     } catch (err) {
-      console.error('Login falied:', err);
-
-      if (axios.isAxiosError(err) && err.response?.status === 401) {
-        setError('Invalid email or password.');
-      } else {
-        setError('An error occurred while logging in. Please try again later.');
-      }
+      console.error('Login failed:', err);
+      setError('An error occurred while logging in Please try again later.');
     }
   };
 
@@ -113,7 +94,7 @@ export default function LoginForm() {
             </div>
           </div>
         </div>
-        <Button className='mt-4 w-full'>
+        <Button className='mt-4 w-full' type='submit'>
           Log in <ArrowRightIcon className='ml-auto h-5 w-5 text-gray-50' />
         </Button>
         {error && (
