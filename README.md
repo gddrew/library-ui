@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Getting Started - Local Development
 
-## Getting Started
+First, get the servers running:
 
-First, run the development server:
+1. Start the LibrarySvc in Spring Boot by running
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+   ```
+   ./gradlew clean build bootRun
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Start the LibraryUI server by running
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+   ```
+   npm run dev
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Learn More
+## Running in Production
 
-To learn more about Next.js, take a look at the following resources:
+#### Note: The first three steps are one time only
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Be sure you have the `.env.production` file in the libraryui project directory with these values:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```
+   NEXT_PUBLIC_LIBRARY_APP_URL=https://app.randomlake.cc
+   LIBRARY_API_URL=https://api.randomlake.cc
+   ```
 
-## Deploy on Vercel
+   The libraryui project directory is `home/greg/projects/libraryui`; the service api project directory is `home/greg/projects/librarysvc`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. The `libraryui.service` file should exist in `~/.config/systemd/user/` with this content:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```
+   [Unit]
+   Description=LibraryUI (Pdman)
+   After=network-online.target
+   Wants=network-online.target
+
+   [Service]
+   Restart=always
+   RestartSec=5
+   EnvironmentFile=%h/codebase/podman/libraryui/env/libraryui.env
+   ExecStartPre=-/usr/bin/podman stop libraryui
+   ExecStartPre=-/usr/bin/podman rm libraryui
+   ExecStart=/usr/bin/podman run --name libraryui \
+     --env-file %h/codebase/podman/libraryui/env/libraryui.env \
+     -p 3000:3000 \
+     localhost/libraryui:dev
+   ExecStop=/usr/bin/podman stop -t5 libraryui
+
+
+   [Install]
+   WantedBy=default.target
+   ```
+
+3. Run these commands:
+
+   ```
+   systemctl --user daemon-reload
+   systemctl --user enable libraryui.service
+   ```
+
+4. When updates are pushed to the GitLab repo, run these commands, in order, in the libraryui project directory:
+
+   ```
+   git fetch && git pull
+   podman build -t localhost/libraryui:dev .
+   systemctl --user restart libraryui.service
+   ```
+
+5. You can run `podman ps | grep libraryui` to verify that the service is running.

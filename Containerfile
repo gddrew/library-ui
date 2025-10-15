@@ -12,7 +12,7 @@
     
     # Copy the rest and build
     COPY . .
-    # If you use NEXT_TELEMETRY_DISABLED in CI, itâ€s fine to ignore here
+    # If you use NEXT_TELEMETRY_DISABLED in CI, it's fine to ignore here
     RUN npm run build
     
     # ---------- runtime stage ----------
