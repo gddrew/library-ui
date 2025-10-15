@@ -6,59 +6,44 @@ import {
   KeyIcon,
   ExclamationCircleIcon,
   UserCircleIcon,
+  CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
-import { useRouter } from 'next/navigation';
-import axios from 'axios';
-import apiClient from '../services/apiClient';
-import Cookies from 'js-cookie';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 
 export default function LoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
+  const params = useSearchParams();
+  const justRegistered = params.get('registered') === '1';
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('handleLogin called');
+    console.log('SUBMIT fired'); // trying to verify
     setError('');
 
     try {
-      console.log('Attempting login with:', { username, password });
-      const response = await apiClient.post('/api/auth/login', {
-        username,
-        password,
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ username, password }),
       });
 
-      console.log('Response received:', response);
-      const token = response.data;
-
-      if (response.status === 200 && response.data) {
-        console.log('Login successful. Token received:', response.data);
-
-        // Store the JWT token
-        Cookies.set('token', token, {
-          secure: false,
-          sameSite: 'strict',
-        });
-        console.log('Token stored in cookie:', token);
-
-        // Redirect to the dashboard or another protected route
+      if (res.ok) {
         router.push('/dashboard');
+      } else if (res.status === 401) {
+        setError('Invalid username or password.');
       } else {
-        console.error('Unexpected response format:', response);
         setError('Failed to log in. Please try again.');
       }
     } catch (err) {
-      console.error('Login falied:', err);
-
-      if (axios.isAxiosError(err) && err.response?.status === 401) {
-        setError('Invalid email or password.');
-      } else {
-        setError('An error occurred while logging in. Please try again later.');
-      }
+      console.error('Login failed:', err);
+      setError('An error occurred while logging in Please try again later.');
     }
   };
 
@@ -68,6 +53,14 @@ export default function LoginForm() {
         <h1 className={`${lusitana.className} mb-3 text-2xl`}>
           Please log in to continue.
         </h1>
+
+        {justRegistered && (
+          <div className='mb-3 flex items-start gap-2 rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-800'>
+            <CheckCircleIcon className='mt-0.5 h-5 w-5' />
+            <span>Your account was created. You can sign in now.</span>
+          </div>
+        )}
+
         <div className='w-full'>
           <div>
             <label
@@ -86,6 +79,7 @@ export default function LoginForm() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                autoComplete='username'
               />
               <UserCircleIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900' />
             </div>
@@ -107,13 +101,14 @@ export default function LoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={6}
+                minLength={8}
+                autoComplete='current-password'
               />
               <KeyIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900' />
             </div>
           </div>
         </div>
-        <Button className='mt-4 w-full'>
+        <Button className='mt-4 w-full' type='submit'>
           Log in <ArrowRightIcon className='ml-auto h-5 w-5 text-gray-50' />
         </Button>
         {error && (
@@ -122,6 +117,17 @@ export default function LoginForm() {
             {error}
           </div>
         )}
+
+        {/* New: link to registration */}
+        <p className='mt-4 text-center text-sm text-gray-600'>
+          Don&apos;t have an account?{' '}
+          <Link
+            href='/auth/register'
+            className='font-medium text-gray-900 underline'
+          >
+            Create one
+          </Link>
+        </p>
       </div>
     </form>
   );
