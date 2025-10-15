@@ -15,16 +15,13 @@ export async function POST(req: NextRequest) {
   try {
     const { username, password } = await req.json();
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_LIBRARY_API_URL}/login`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ username, password }).toString(),
-        credentials: 'include',
-        redirect: 'manual',
-      }
-    );
+    const res = await fetch(`${process.env.LIBRARY_API_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ username, password }).toString(),
+      credentials: 'include',
+      redirect: 'manual',
+    });
 
     const setCookie = res.headers.get('set-cookie');
     const bodyText = await res.text();

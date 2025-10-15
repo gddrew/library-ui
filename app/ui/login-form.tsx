@@ -6,16 +6,20 @@ import {
   KeyIcon,
   ExclamationCircleIcon,
   UserCircleIcon,
+  CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 
 export default function LoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
+  const params = useSearchParams();
+  const justRegistered = params.get('registered') === '1';
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,6 +53,14 @@ export default function LoginForm() {
         <h1 className={`${lusitana.className} mb-3 text-2xl`}>
           Please log in to continue.
         </h1>
+
+        {justRegistered && (
+          <div className='mb-3 flex items-start gap-2 rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-800'>
+            <CheckCircleIcon className='mt-0.5 h-5 w-5' />
+            <span>Your account was created. You can sign in now.</span>
+          </div>
+        )}
+
         <div className='w-full'>
           <div>
             <label
@@ -67,6 +79,7 @@ export default function LoginForm() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                autoComplete='username'
               />
               <UserCircleIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900' />
             </div>
@@ -88,7 +101,8 @@ export default function LoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={6}
+                minLength={8}
+                autoComplete='current-password'
               />
               <KeyIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900' />
             </div>
@@ -103,6 +117,17 @@ export default function LoginForm() {
             {error}
           </div>
         )}
+
+        {/* New: link to registration */}
+        <p className='mt-4 text-center text-sm text-gray-600'>
+          Don&apos;t have an account?{' '}
+          <Link
+            href='/auth/register'
+            className='font-medium text-gray-900 underline'
+          >
+            Create one
+          </Link>
+        </p>
       </div>
     </form>
   );
