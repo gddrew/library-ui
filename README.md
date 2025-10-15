@@ -5,7 +5,7 @@ First, get the servers running:
 1. Start the LibrarySvc in Spring Boot by running
 
    ```
-   ./gradlew clean build bootRun
+   ./gradlew bootRun --args='--spring.profiles.active=dev'
    ```
 
 2. Start the LibraryUI server by running
@@ -15,6 +15,16 @@ First, get the servers running:
    ```
 
 3. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+#### Troubleshooting Local Dev
+
+Always:
+
+1. Clear site data for `localhost:3000`.
+2. Start Spring with dev profile, then start Next.
+3. In the Developer Tools in Chrome: Login → **Network** `/api/auth/login` shows `Set-Cookie` _without_ `Domain` and **without** `Secure`.
+4. **Application → Cookies →** `http://localhost:3000` has `JSESSIONID`.
+5. Create/PUT media → **Network** shows `/backend/...` with `Cookie: JSESSIONID=...` and 200/204.
 
 ## Running in Production
 

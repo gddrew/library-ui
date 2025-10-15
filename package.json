@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "api:dev": "SPRING_PROFILES_ACTIVE=dev ./gradlew bootRun",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
