@@ -198,9 +198,10 @@ export default function PatronDetails({ patron }: { patron: PatronForm }) {
                         .split('T')[0]
                   : ''
               }
-              onChange={handleChange}
-              disabled={!isEditing}
-              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+              // onChange={handleChange}
+              // disabled={!isEditing}
+              readOnly
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm text-gray-500'
             />
           </div>
           <div>
@@ -220,7 +221,7 @@ export default function PatronDetails({ patron }: { patron: PatronForm }) {
                   : ''
               }
               readOnly
-              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm text-gray-500'
             />
           </div>
         </div>
