@@ -48,16 +48,16 @@ Always:
    Wants=network-online.target
 
    [Service]
+   Type=simple
    Restart=always
    RestartSec=5
-   EnvironmentFile=%h/codebase/podman/libraryui/env/libraryui.env
-   ExecStartPre=-/usr/bin/podman stop libraryui
-   ExecStartPre=-/usr/bin/podman rm libraryui
-   ExecStart=/usr/bin/podman run --name libraryui \
-     --env-file %h/codebase/podman/libraryui/env/libraryui.env \
-     -p 3000:3000 \
+   ExecStart=/usr/bin/podman run --name libraryui --replace \
+     --env-file /home/greg/codebase/podman/libraryui/env/libraryui.env \
+     --network host \
      localhost/libraryui:dev
-   ExecStop=/usr/bin/podman stop -t5 libraryui
+   ExecStop=/usr/bin/podman stop -t10 libraryui
+   StandardOutput=journal
+   StandardError=journal
 
 
    [Install]
@@ -68,7 +68,7 @@ Always:
 
    ```
    systemctl --user daemon-reload
-   systemctl --user enable libraryui.service
+   systemctl --user enable --now libraryui.service
    ```
 
 4. When updates are pushed to the GitLab repo, run these commands, in order, in the libraryui project directory:
