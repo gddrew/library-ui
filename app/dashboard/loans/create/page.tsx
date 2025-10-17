@@ -37,7 +37,7 @@ export default function CreateLoanPage() {
         throw new Error('No patron found for that card');
       }
 
-      router.push(`/checkout?patronId=${data.patronId}`);
+      router.push(`/dashboard/loans/checkout?patronId=${data.patronId}`);
     } catch (e) {
       const err = e as Error;
       setError(err.message || 'Something went wrong');
