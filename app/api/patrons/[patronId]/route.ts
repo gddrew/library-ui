@@ -40,8 +40,7 @@ export async function GET(
 
     const data = await resp.json();
     return NextResponse.json(data);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (e) {
+  } catch {
     return NextResponse.json(
       { message: 'Error contacting Library API.' },
       { status: 502 }

@@ -10,23 +10,11 @@ interface Patron {
   email?: string;
 }
 
-interface BackendItem {
-  mediaId?: number;
-  itemId?: number;
-  id?: number;
-  formattedBarcodeId?: string;
-  barcode?: string;
-  mediaTitle?: string;
-  title?: string;
-  mediaStatus?: string;
-  status?: string;
-}
-
 interface ScannedItem {
   mediaId: number;
-  barcode: string;
   title: string;
   status: string;
+  barcode?: string;
 }
 
 type LoanTransactionResponse = {
@@ -39,7 +27,7 @@ type LoanTransactionResponse = {
   }>;
 };
 
-type TransactionType = 'CHECKOUT' | 'CHECKIN' | 'RENEW';
+type TransactionType = 'CHECKOUT' | 'RETURN';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -61,8 +49,7 @@ export default function CheckoutPage() {
   const [submitErr, setSubmitErr] = useState<string | null>(null);
   const [result, setResult] = useState<LoanTransactionResponse | null>(null);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [recent, setRecent] = useState<any[] | null>(null);
+  const [recent, setRecent] = useState<unknown[] | null>(null);
 
   useEffect(() => {
     if (!Number.isFinite(patronId)) return;
@@ -81,9 +68,8 @@ export default function CheckoutPage() {
         }
         const data: Patron = await resp.json();
         setPatron(data);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (e: any) {
-        setPatronErr(e?.message || 'Unable to load patron.');
+      } catch (e: unknown) {
+        setPatronErr(e instanceof Error ? e.message : 'Unable to load patron.');
       } finally {
         setLoadingPatron(false);
       }
@@ -112,11 +98,11 @@ export default function CheckoutPage() {
   const onScanKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      addByBarcode();
+      addByCode();
     }
   };
 
-  async function addByBarcode() {
+  async function addByCode() {
     const code = barcode.trim();
     if (!code) return;
     setScanErr(null);
@@ -125,37 +111,30 @@ export default function CheckoutPage() {
         cache: 'no-store',
       });
       if (!resp.ok) {
-        const j = await resp.json().catch(() => ({}));
-        throw new Error(j?.message || `Lookup failed (${resp.status}).`);
+        const text = await resp.text().catch(() => '');
+        throw new Error(text || `Lookup failed (${resp.status}).`);
       }
-      const item: BackendItem = await resp.json();
-      const scanned: ScannedItem = {
-        mediaId: Number(item.mediaId ?? item.itemId ?? item.id ?? NaN),
-        barcode: item.formattedBarcodeId ?? item.barcode ?? String(barcode),
-        title: item.mediaTitle ?? item.title ?? 'Untitled',
-        status: item.mediaStatus ?? item.status ?? 'UNKNOWN',
-      };
+      const item = (await resp.json()) as ScannedItem;
 
-      if (!Number.isFinite(scanned.mediaId)) {
+      if (!Number.isFinite(item.mediaId)) {
         throw new Error('Item lookup did not include a valid mediaId.');
       }
-      if (scanned.status !== 'AVAILABLE') {
-        throw new Error(`Item is not available (status: ${scanned.status}).`);
+      if (item.status && item.status !== 'AVAILABLE') {
+        throw new Error(`Item is not available (status: ${item.status}).`);
       }
-      if (basket.some((b) => b.mediaId === scanned.mediaId)) {
+      if (basket.some((b) => b.mediaId === item.mediaId)) {
         throw new Error('Item already in basket.');
       }
 
-      setBasket((b) => [scanned, ...b]);
+      setBasket((b) => [item, ...b]);
       setBarcode('');
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      setScanErr(e?.message || 'Could not add item.');
+    } catch (e: unknown) {
+      setScanErr(e instanceof Error ? e.message : 'Could not add item.');
     }
   }
 
-  function removeFromBasket(code: string) {
-    setBasket((b) => b.filter((i) => i.barcode !== code));
+  function removeFromBasket(mediaId: number) {
+    setBasket((b) => b.filter((i) => i.mediaId !== mediaId));
   }
 
   async function submitCheckout() {
@@ -187,15 +166,14 @@ export default function CheckoutPage() {
         body: JSON.stringify(payload),
       });
       if (!resp.ok) {
-        const j = await resp.json().catch(() => ({}));
-        throw new Error(j?.message || `Checkout failed (${resp.status}).`);
+        const text = await resp.text().catch(() => '');
+        throw new Error(text || `Checkout failed (${resp.status}).`);
       }
       const data: LoanTransactionResponse = await resp.json();
       setResult(data);
       setBasket([]);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      setSubmitErr(e?.message || 'Checkout failed.');
+    } catch (e: unknown) {
+      setSubmitErr(e instanceof Error ? e.message : 'Checkout failed.');
     } finally {
       setSubmitting(false);
     }
@@ -250,7 +228,7 @@ export default function CheckoutPage() {
         )}
       </section>
 
-      {/* Scan barcodes */}
+      {/* Scan items */}
       <section className='rounded-2xl border p-4 shadow-sm'>
         <h2 className='text-xl font-semibold'>Scan Items</h2>
         <div className='mt-3 flex gap-2'>
@@ -259,14 +237,14 @@ export default function CheckoutPage() {
             inputMode='numeric'
             pattern='[0-9]*'
             autoFocus
-            placeholder='Scan or type barcode'
+            placeholder='Scan or type barcode / media ID'
             className='flex-1 border rounded-lg px-3 py-2 outline-none focus:ring'
             value={barcode}
             onChange={(e) => setBarcode(e.target.value)}
             onKeyDown={onScanKeyDown}
           />
           <button
-            onClick={addByBarcode}
+            onClick={addByCode}
             className='px-4 py-2 rounded-lg border shadow-sm'
           >
             Add
@@ -281,7 +259,7 @@ export default function CheckoutPage() {
         <ul className='mt-4 divide-y'>
           {basket.map((item) => (
             <li
-              key={item.barcode}
+              key={item.mediaId}
               className='py-2 flex items-center justify-between'
             >
               <div className='min-w-0'>
@@ -289,15 +267,20 @@ export default function CheckoutPage() {
                   {item.title || 'Untitled item'}
                 </div>
                 <div className='text-sm text-gray-600'>
-                  Barcode: {item.barcode}
+                  Media ID: {item.mediaId}
                 </div>
+                {item.barcode && (
+                  <div className='text-sm text-gray-600'>
+                    Barcode: {item.barcode}
+                  </div>
+                )}
               </div>
               <div className='flex items-center gap-3'>
                 <span className='text-xs rounded px-2 py-1 border'>
                   {item.status}
                 </span>
                 <button
-                  onClick={() => removeFromBasket(item.barcode)}
+                  onClick={() => removeFromBasket(item.mediaId)}
                   className='text-sm px-3 py-1 rounded-lg border'
                 >
                   Remove
