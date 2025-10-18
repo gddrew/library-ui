@@ -46,10 +46,13 @@ export async function GET(
     }
     const data = await resp.json();
     return NextResponse.json(data);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (e: any) {
+  } catch (e: unknown) {
     return NextResponse.json(
-      { message: `Error contacting Library API: ${e?.message || 'Unknown'}` },
+      {
+        message: `Error contacting Library API: ${
+          e instanceof Error ? e.message : 'Unknown'
+        }`,
+      },
       { status: 502 }
     );
   }

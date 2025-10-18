@@ -52,12 +52,11 @@ export async function GET(
 
     const data = await resp.json();
     return NextResponse.json(data);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any) {
+  } catch (e: unknown) {
     return NextResponse.json(
       {
         message: `Error contacting Library API: ${
-          err?.message || 'Unknown error'
+          e instanceof Error ? e.message : 'Unknown error'
         }`,
       },
       { status: 502 }
