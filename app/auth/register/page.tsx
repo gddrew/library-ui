@@ -40,8 +40,7 @@ export default function RegisterPage() {
         setError(data?.message || 'Username or email already exists.');
       else if (res.status === 400) setError(data?.message || 'Invalid input.');
       else setError('Registration failed. Please try again.');
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (err) {
+    } catch {
       setError('Network error. Please try again.');
     } finally {
       setBusy(false);
