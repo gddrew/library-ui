@@ -46,28 +46,40 @@ export default async function PatronHistoryPage({
             </tr>
           </thead>
           <tbody>
-            {history.map((loanRecord) =>
-              loanRecord.items.map((item, itemIndex) => (
-                <tr key={`${loanRecord.loanId}-${itemIndex}`}>
-                  <td className='border-b p-2'>{loanRecord.loanId}</td>
-                  <td className='border-b p-2'>
-                    {formatDateToLocal(item.checkoutDate)}
-                  </td>
-                  <td className='border-b p-2'>
-                    {formatDateToLocal(item.dueDate)}
-                  </td>
-                  <td className='border-b p-2'>
-                    {item.returnDate ? formatDateToLocal(item.returnDate) : ''}
-                  </td>
-                  <td className='border-b p-2'>
-                    {item.mediaDetails?.media_title}
-                  </td>
-                  <td className='border-b p-2'>
-                    {capitalizeFirstLetter(item.status)}
-                  </td>
-                </tr>
-              ))
-            )}
+            {[...history] // this clones it so you don't mutate the original
+              .sort((a, b) => b.loanId - a.loanId) // sort descending order
+              .map((loanRecord) =>
+                [...loanRecord.items]
+                  .sort((a, b) =>
+                    (a.mediaDetails?.media_title || '').localeCompare(
+                      b.mediaDetails?.media_title || '',
+                      undefined,
+                      { sensitivity: 'base' }
+                    )
+                  )
+                  .map((item, itemIndex) => (
+                    <tr key={`${loanRecord.loanId}-${itemIndex}`}>
+                      <td className='border-b p-2'>{loanRecord.loanId}</td>
+                      <td className='border-b p-2'>
+                        {formatDateToLocal(item.checkoutDate)}
+                      </td>
+                      <td className='border-b p-2'>
+                        {formatDateToLocal(item.dueDate)}
+                      </td>
+                      <td className='border-b p-2'>
+                        {item.returnDate
+                          ? formatDateToLocal(item.returnDate)
+                          : ''}
+                      </td>
+                      <td className='border-b p-2'>
+                        {item.mediaDetails?.media_title}
+                      </td>
+                      <td className='border-b p-2'>
+                        {capitalizeFirstLetter(item.status)}
+                      </td>
+                    </tr>
+                  ))
+              )}
           </tbody>
         </table>
       ) : (
