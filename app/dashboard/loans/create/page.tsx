@@ -75,7 +75,7 @@ export default function CreateLoanPage() {
         <button
           onClick={runSearch}
           disabled={loading}
-          className='rounded-lg px-4 py-2 border shadow-sm disabled:opacity-60'
+          className='inline-block px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600'
         >
           {loading ? 'Searching…' : 'Search'}
         </button>
