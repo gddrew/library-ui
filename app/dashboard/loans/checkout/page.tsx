@@ -1,6 +1,12 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 const MAX_ITEMS = 6;
@@ -98,43 +104,54 @@ export default function CheckoutPage() {
     return 'border-gray-300 text-gray-700';
   }
 
-  async function fetchMediaTitle(mediaId: number): Promise<string | null> {
-    try {
-      const r = await fetch(`/api/items/${mediaId}`, { cache: 'no-store' });
-      if (!r.ok) return null;
-      const j = await r.json();
-      return typeof j?.title === 'string' ? j.title : null;
-    } catch {
-      return null;
-    }
-  }
+  const titlesRef = useRef(titles);
+  useEffect(() => {
+    titlesRef.current = titles;
+  }, [titles]);
 
-  async function hydrateTitlesFromLoans(loans: LoanHistory[]) {
-    setTitles((current) => {
-      const need = new Set<number>();
-      for (const loan of loans) {
-        for (const it of loan.items) {
-          if (current[it.mediaId] == null) need.add(it.mediaId);
+  type BatchRow = { mediaId: number; mediaTitle?: string; title?: string };
+  type BatchResponse = { items: BatchRow[] } | BatchRow[];
+
+  const hydrateTitlesFromLoans = useCallback(async (loans: LoanHistory[]) => {
+    const current = titlesRef.current;
+    const ids = new Set<number>();
+    for (const loan of loans) {
+      for (const it of loan.items) {
+        if (current[it.mediaId] == null) ids.add(it.mediaId);
+      }
+    }
+    if (ids.size === 0) return;
+
+    try {
+      const resp = await fetch('/api/collection/media/batch', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({ mediaIds: Array.from(ids) }),
+      });
+      if (!resp.ok) {
+        console.warn('batch titles fetch failed:', resp.status);
+        return;
+      }
+
+      const data = (await resp.json()) as BatchResponse;
+      const rows: BatchRow[] = Array.isArray(data) ? data : data?.items ?? [];
+      const next: Record<number, string> = {};
+      for (const row of rows) {
+        const title = row.mediaTitle ?? row.title;
+        if (row?.mediaId != null && typeof title === 'string') {
+          next[row.mediaId] = title;
         }
       }
-      if (need.size === 0) return current; // nothing to do
-      // Start fetching; we’ll update in a follow-up setTitles call
-      (async () => {
-        const idArr = Array.from(need);
-        const results = await Promise.all(
-          idArr.map(async (id) => [id, await fetchMediaTitle(id)] as const)
-        );
-        setTitles((cur2) => {
-          const next = { ...cur2 };
-          for (const [id, title] of results) {
-            if (title) next[id] = title;
-          }
-          return next;
-        });
-      })();
-      return current;
-    });
-  }
+      if (Object.keys(next).length > 0) {
+        setTitles((cur) => ({ ...cur, ...next }));
+      }
+    } catch (err) {
+      console.warn('batch titles fetch error:', err);
+    }
+  }, []);
 
   const toggleCard = (loanId: number) =>
     setCollapsed((m) => ({ ...m, [loanId]: !m[loanId] }));
@@ -175,6 +192,7 @@ export default function CheckoutPage() {
           return;
         }
         if (!r.ok) return;
+
         const data = await r.json();
         const arr = Array.isArray(data) ? (data as LoanHistory[]) : [];
         arr.sort((a, b) =>
@@ -194,13 +212,13 @@ export default function CheckoutPage() {
           return next;
         });
 
-        // hydrate titles
-        hydrateTitlesFromLoans(top);
+        // hydrate titles via batch (stable callback)
+        await hydrateTitlesFromLoans(top);
       } catch {
         // ignore
       }
     })();
-  }, [patronId]);
+  }, [patronId, hydrateTitlesFromLoans]);
 
   const onScanKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === 'Enter') {
@@ -298,7 +316,7 @@ export default function CheckoutPage() {
         <h1 className='text-3xl font-bold'>Checkout</h1>
         <button
           onClick={() => router.push('/dashboard/loans/create')}
-          className='px-3 py-2 rounded-lg border shadow-sm'
+          className='inline-block px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600'
         >
           Scan Different Card
         </button>
@@ -352,7 +370,7 @@ export default function CheckoutPage() {
           />
           <button
             onClick={addByCode}
-            className='px-4 py-2 rounded-lg border shadow-sm'
+            className='inline-block px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600'
           >
             Add
           </button>
@@ -388,7 +406,7 @@ export default function CheckoutPage() {
                 </span>
                 <button
                   onClick={() => removeFromBasket(item.mediaId)}
-                  className='text-sm px-3 py-1 rounded-lg border'
+                  className='text-sm px-3 py-1 rounded-lg text-black hover:bg-red-600 hover:text-white border'
                 >
                   Remove
                 </button>
@@ -414,7 +432,7 @@ export default function CheckoutPage() {
             <button
               disabled={submitting || basket.length === 0}
               onClick={submitCheckout}
-              className='px-4 py-2 rounded-lg border shadow-sm disabled:opacity-60'
+              className='px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white border shadow-sm disabled:opacity-60'
             >
               {submitting ? 'Checking out…' : 'Complete Checkout'}
             </button>
@@ -478,7 +496,7 @@ export default function CheckoutPage() {
                     <div className='flex items-center gap-2'>
                       <button
                         onClick={() => toggleCard(loan.loanId)}
-                        className='text-xs px-2 py-0.5 rounded border'
+                        className='text-xs px-2 py-0.5 rounded border hover:bg-blue-600 hover:text-white'
                         aria-expanded={!isCollapsed}
                         aria-controls={`loan-${loan.loanId}`}
                       >
