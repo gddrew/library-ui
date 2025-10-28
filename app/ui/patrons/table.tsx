@@ -106,6 +106,7 @@ export default function PatronTable({ patrons }: PatronTableProps) {
                         pathname: `/dashboard/patrons/${patron.patronId}`,
                         query: { from },
                       }}
+                      className='hover:text-blue-600'
                     >
                       {patron.patronId}
                     </Link>

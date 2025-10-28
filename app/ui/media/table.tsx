@@ -97,6 +97,7 @@ export default function MediaTable({ media }: MediaTableProps) {
                         pathname: `/dashboard/media/${media.mediaId}`,
                         query: { from },
                       }}
+                      className='hover:text-blue-600'
                     >
                       {media.mediaId}
                     </Link>
