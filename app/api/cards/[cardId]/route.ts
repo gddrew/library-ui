@@ -15,9 +15,10 @@ export async function GET(
   }
 
   const { cardId } = await ctx.params;
-  const url = `${API_BASE.replace(/\/$/, '')}/api/cards/${encodeURIComponent(
-    cardId
-  )}`;
+  const url = `${API_BASE.replace(
+    /\/$/,
+    ''
+  )}/api/cards/code/${encodeURIComponent(cardId)}`;
   console.log('Proxying to:', url);
 
   try {
