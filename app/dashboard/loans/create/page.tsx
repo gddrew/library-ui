@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { lusitana } from '@/app/ui/fonts';
 
 interface Patron {
   patronId: number;
@@ -54,31 +55,36 @@ export default function CreateLoanPage() {
   };
 
   return (
-    <div className='max-w-xl mx-auto p-6'>
-      <h1 className='text-3xl font-bold'>Start Checkout</h1>
-      <p className='mt-2 text-sm text-gray-600'>
-        Scan or type a library card number, then press Enter or click Search.
-      </p>
-
-      <div className='mt-6 flex gap-2'>
-        <input
-          type='text'
-          inputMode='numeric'
-          pattern='[0-9]*'
-          autoFocus
-          placeholder='Library Card Number'
-          className='flex-1 border rounded-lg px-3 py-2 outline-none focus:ring focus:ring-blue-200'
-          value={cardId}
-          onChange={(e) => setCardId(e.target.value)}
-          onKeyDown={onKeyDown}
-        />
-        <button
-          onClick={runSearch}
-          disabled={loading}
-          className='inline-block px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600'
-        >
-          {loading ? 'Searching…' : 'Search'}
-        </button>
+    <div className='w-full'>
+      <div className='flex w-full items-center justify-between'>
+        <h1 className={`${lusitana.className} text-2xl`}>Start Checkout</h1>
+      </div>
+      <div className='mt-4 flex items-center justify-between gap-2 md:mt-8'>
+        <p className='text-sm text-gray-600'>
+          Scan or type a library card number, then press Enter or click Search.
+        </p>
+      </div>
+      <div className='relative mt-6 transition-opacity duration-500'>
+        <div className='flex gap-2'>
+          <input
+            type='text'
+            inputMode='numeric'
+            pattern='[0-9]*'
+            autoFocus
+            placeholder='Library Card Number'
+            className='flex-1 border rounded-lg px-3 py-2 outline-none focus:ring focus:ring-blue-200'
+            value={cardId}
+            onChange={(e) => setCardId(e.target.value)}
+            onKeyDown={onKeyDown}
+          />
+          <button
+            onClick={runSearch}
+            disabled={loading}
+            className='inline-block px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600'
+          >
+            {loading ? 'Searching…' : 'Search'}
+          </button>
+        </div>
       </div>
 
       {error && (

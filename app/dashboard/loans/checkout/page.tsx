@@ -362,7 +362,7 @@ export default function CheckoutPage() {
             inputMode='numeric'
             pattern='[0-9]*'
             autoFocus
-            placeholder='Scan or type barcode / media ID'
+            placeholder='Scan or type barcode'
             className='flex-1 border rounded-lg px-3 py-2 outline-none focus:ring'
             value={barcode}
             onChange={(e) => setBarcode(e.target.value)}

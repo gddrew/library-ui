@@ -43,6 +43,7 @@ export async function GET(
     'api',
     'collection',
     'media',
+    'code',
     encodeURIComponent(code)
   );
 
