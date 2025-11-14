@@ -29,7 +29,7 @@ export type Media = {
   created_date: Date;
   mediaTitle: string;
   authorName: string;
-  isbnId: string;
+  isbnId: string | null;
   barCodeId: string;
   publicationYear: string;
   mediaType: string;
@@ -167,7 +167,7 @@ export type MediaForm = {
   created_date: Date;
   mediaTitle: string;
   authorName: string;
-  isbnId: string;
+  isbnId: string | null;
   barCodeId: string;
   publicationYear: string;
   mediaType: string;

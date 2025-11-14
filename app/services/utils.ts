@@ -16,12 +16,20 @@ export function baseUrl() {
 }
 
 // Format ISBN numbers
-export function formatISBN13(isbn: string | number): string {
+export function formatISBN13(isbn?: string | number | null): string {
+  if (isbn === null || isbn === undefined || isbn == '') {
+    return '';
+  }
   const isbnStr = isbn.toString().replace(/[^0-9]/g, '');
 
-  // if (isbnStr.length !== 13) {
-  //   throw new Error('Invalid ISBN-13: Must be a 13-digit number.');
-  // }
+  if (!isbnStr) {
+    return '';
+  }
+
+  if (isbnStr.length !== 13) {
+    throw new Error('Invalid ISBN-13: Must be a 13-digit number.');
+  }
+
   const prefix = isbnStr.substring(0, 3); // e.g., 978 or 979
   const group = isbnStr.substring(3, 4); // Assuming group is 1 digit
   const publisher = isbnStr.substring(4, 8); // Assuming publisher is 4 digits
