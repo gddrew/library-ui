@@ -57,6 +57,11 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
   // Confirmation for deletion
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+  // Normalize null to '' for ISBN
+  const isbnValue = isEditing
+    ? localData.isbnId ?? ''
+    : formatISBN13(localData.isbnId ?? undefined);
+
   // Toggle editing on/off
   function handleEdit() {
     setIsEditing(true);
@@ -245,7 +250,7 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
             </label>
             <select
               name='disposalDisposition'
-              value={localData.disposalDisposition}
+              value={localData.disposalDisposition ?? ''}
               onChange={handleChange}
               disabled={!isEditing}
               className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
@@ -301,9 +306,7 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
             <input
               name='isbnId'
               type='text'
-              value={
-                isEditing ? localData.isbnId : formatISBN13(localData.isbnId)
-              }
+              value={isbnValue}
               onChange={handleChange}
               readOnly={!isEditing}
               className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
