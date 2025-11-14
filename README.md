@@ -80,3 +80,160 @@ Always:
    ```
 
 5. You can run `podman ps | grep libraryui` to verify that the service is running.
+
+## Project Layout
+
+```
+libraryui
+├── app
+│   ├── api
+│   │   ├── auth
+│   │   │   ├── login
+│   │   │   │   └── route.ts
+│   │   │   ├── logout
+│   │   │   │   └── route.ts
+│   │   │   └── register
+│   │   │       └── route.ts
+│   │   ├── cards
+│   │   │   └── [cardId]
+│   │   │       └── route.ts
+│   │   ├── collection
+│   │   │   └── media
+│   │   │       └── batch
+│   │   │           └── route.ts
+│   │   ├── items
+│   │   │   └── [code]
+│   │   │       └── route.ts
+│   │   ├── loans
+│   │   │   ├── action
+│   │   │   │   └── route.ts
+│   │   │   └── history
+│   │   │       └── patron
+│   │   │           └── [patronId]
+│   │   │               └── route.ts
+│   │   ├── patrons
+│   │   │   └── [patronId]
+│   │   │       └── route.ts
+│   │   └── ping
+│   │       └── route.ts
+│   ├── auth
+│   │   ├── login
+│   │   │   └── page.tsx
+│   │   └── register
+│   │       └── page.tsx
+│   ├── dashboard
+│   │   ├── (overview)
+│   │   │   ├── loading.tsx
+│   │   │   └── page.tsx
+│   │   ├── cards
+│   │   │   └── page.tsx
+│   │   ├── fines
+│   │   │   └── page.tsx
+│   │   ├── invoices
+│   │   │   ├── [id]
+│   │   │   │   ├── edit
+│   │   │   │   │   ├── not-found.tsx
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── page.tsx
+│   │   │   ├── create
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx
+│   │   ├── loans
+│   │   │   ├── checkout
+│   │   │   │   └── page.tsx
+│   │   │   ├── create
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx
+│   │   ├── media
+│   │   │   ├── [id]
+│   │   │   │   ├── history
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── page.tsx
+│   │   │   ├── create
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx
+│   │   ├── patrons
+│   │   │   ├── [id]
+│   │   │   │   ├── cards
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── history
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── page.tsx
+│   │   │   ├── create
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx
+│   │   ├── reports
+│   │   │   └── page.tsx
+│   │   └── layout.tsx
+│   ├── lib
+│   │   ├── state-options.ts
+│   │   ├── subCategoryOptions.ts
+│   │   └── useDebounce.ts
+│   ├── services
+│   │   ├── apiClient.ts
+│   │   ├── cardService.ts
+│   │   ├── definitions.ts
+│   │   ├── invoiceService.ts
+│   │   ├── loanService.ts
+│   │   ├── mediaService.ts
+│   │   ├── patronService.ts
+│   │   └── utils.ts
+│   ├── ui
+│   │   ├── cards
+│   │   │   └── buttons.tsx
+│   │   ├── dashboard
+│   │   │   ├── nav-links.tsx
+│   │   │   └── sidenav.tsx
+│   │   ├── invoices
+│   │   │   ├── buttons.tsx
+│   │   │   ├── campaign-selector.tsx
+│   │   │   ├── campaignData.ts
+│   │   │   ├── create-form.tsx
+│   │   │   ├── invoice-details.tsx
+│   │   │   ├── status.tsx
+│   │   │   └── table.tsx
+│   │   ├── loans
+│   │   │   └── buttons.tsx
+│   │   ├── media
+│   │   │   ├── buttons.tsx
+│   │   │   ├── create-form.tsx
+│   │   │   ├── media-details.tsx
+│   │   │   ├── status.tsx
+│   │   │   └── table.tsx
+│   │   ├── patrons
+│   │   │   ├── buttons.tsx
+│   │   │   ├── create-form.tsx
+│   │   │   ├── patron-details.tsx
+│   │   │   ├── status.tsx
+│   │   │   └── table.tsx
+│   │   ├── breadcrumbs.tsx
+│   │   ├── button.tsx
+│   │   ├── fonts.ts
+│   │   ├── global.css
+│   │   ├── lib-logo.tsx
+│   │   ├── login-form.tsx
+│   │   ├── pagination.tsx
+│   │   ├── search.tsx
+│   │   └── skeletons.tsx
+│   ├── _middleware.ts
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── tree_view.py
+├── public
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
+├── Containerfile
+├── next-env.d.ts
+├── next.config.ts
+├── package-lock.json
+├── package.json
+├── plasmic.json
+├── postcss.config.mjs
+├── README.md
+├── tailwind.config.ts
+├── tree_view.py
+└── tsconfig.json
+```
