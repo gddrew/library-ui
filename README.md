@@ -81,39 +81,6 @@ Always:
 
 5. You can run `podman ps | grep libraryui` to verify that the service is running.
 
-## NPM Commands
-
-The following is a list of commonly used npm commands for managing JavaScript projects:
-
-| Command                            | Description                                                                  |
-| ---------------------------------- | ---------------------------------------------------------------------------- |
-| `npm init`                         | Initializes a new Node.js project by creating a `package.json` file.         |
-| `npm init -y`                      | Accepts default settings automatically when initializing a project.          |
-| `npm install`                      | Installs all dependencies listed in `package.json`.                          |
-| `npm install <package>`            | Installs a specific package locally.                                         |
-| `npm install -g <package>`         | Installs a package globally, making it available across all projects.        |
-| `npm install --save-dev <package>` | Installs a package as a development dependency (e.g., testing frameworks).   |
-| `npm uninstall <package>`          | Removes a package and its entry from `package.json`.                         |
-| `npm update`                       | Updates all packages to their latest versions per version ranges.            |
-| `npm update <package>`             | Updates a specific package.                                                  |
-| `npm outdated`                     | Checks for outdated packages and shows current, wanted, and latest versions. |
-| `npm audit`                        | Scans for known security vulnerabilities in installed packages.              |
-| `npm audit fix`                    | Attempts to automatically resolve vulnerabilities found by `npm audit`.      |
-| `npm list`                         | Displays the dependency tree of the current project.                         |
-| `npm list --depth=0`               | Lists only top-level packages.                                               |
-| `npm run <script>`                 | Runs a script defined in the `scripts` section of `package.json`.            |
-| `npm run`                          | Lists available scripts.                                                     |
-| `npm publish`                      | Publishes a package to the npm registry.                                     |
-| `npm version <update_type>`        | Updates the version number in `package.json` (patch, minor, major).          |
-| `npm cache clean --force`          | Clears the npm cache to help resolve installation issues.                    |
-| `npm root`                         | Displays the root directory where packages are stored.                       |
-| `npm config get prefix`            | Retrieves the directory where global packages are installed.                 |
-| `npm ls -g --depth=0`              | Lists top-level globally installed packages.                                 |
-| `npm doctor`                       | Checks the environment to ensure npm can function properly.                  |
-| `npm deprecate [@]<package> <msg>` | Adds a deprecation warning to a package in the registry.                     |
-| `npm view <package>`               | Displays detailed information about a specific package.                      |
-| `npm help <topic>`                 | Provides documentation for a specific npm topic.                             |
-
 ## Project Layout
 
 ```
@@ -172,9 +139,9 @@ libraryui
 │   │   │   │   └── page.tsx
 │   │   │   └── page.tsx
 │   │   ├── loans
-│   │   │   ├── create
+│   │   │   ├── checkout
 │   │   │   │   └── page.tsx
-│   │   │   ├── transaction
+│   │   │   ├── create
 │   │   │   │   └── page.tsx
 │   │   │   └── page.tsx
 │   │   ├── media
