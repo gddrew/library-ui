@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { CreateLoan, CloseLoan } from '@/app/ui/loans/buttons';
 import { inter, lusitana } from '@/app/ui/fonts';
 
