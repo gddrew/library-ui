@@ -1,5 +1,10 @@
-import { fetchCheckoutHistory, LoanRecord } from '@/app/services/patronService';
+import {
+  fetchCheckoutHistory,
+  LoanRecord,
+  getPatronById,
+} from '@/app/services/patronService';
 import { capitalizeFirstLetter, formatDateToLocal } from '@/app/services/utils';
+import { lusitana } from '@/app/ui/fonts';
 import Link from 'next/link';
 
 export default async function PatronHistoryPage({
@@ -22,12 +27,22 @@ export default async function PatronHistoryPage({
     history = [];
   }
 
-  const patronName =
-    history.length > 0 ? history[0].patronName : 'Unknown Patron';
+  let patronName = 'Unknown Patron';
+  if (history.length > 0) {
+    patronName = history[0].patronName;
+  } else {
+    try {
+      const patron = await getPatronById(patronIdNum);
+      patronName = patron.patronName || `Patron ${patronIdNum}`;
+    } catch (error) {
+      console.error('Error fetching patron details:', error);
+      patronName = `Patron #${patronIdNum}`;
+    }
+  }
 
   return (
     <div>
-      <h1 className='text-xl font-semibold mb-4'>
+      <h1 className={`${lusitana.className} text-xl`}>
         Checkout History for patron: {patronName}
       </h1>
 
@@ -72,7 +87,8 @@ export default async function PatronHistoryPage({
                           : ''}
                       </td>
                       <td className='border-b p-2'>
-                        {item.mediaDetails?.media_title}
+                        {item.mediaDetails?.media_title ||
+                          'Item removed from collection'}
                       </td>
                       <td className='border-b p-2'>
                         {capitalizeFirstLetter(item.status)}
