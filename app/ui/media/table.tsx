@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import Link from 'next/link';
 import MediaStatus from '@/app/ui/media/status';
 import { formatDateToLocal, formatISBN13 } from '@/app/services/utils';
