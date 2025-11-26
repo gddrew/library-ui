@@ -3,7 +3,12 @@
 import React, { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { MediaForm } from '@/app/services/definitions';
-import { updateMedia, deleteMedia } from '@/app/services/mediaService';
+import {
+  updateMedia,
+  deleteMedia,
+  withdrawMedia,
+  fetchCheckoutHistory,
+} from '@/app/services/mediaService';
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 import { subCategoryOptions } from '@/app/lib/subCategoryOptions';
@@ -54,8 +59,11 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
     acquisitionDate: toDateInputValue(media.acquisitionDate),
   });
 
-  // Confirmation for deletion
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  // Withdraw / delete confirmation
+  const [showWithdrawDialog, setShowWithdrawDialog] = useState(false);
+  const [hasHistory, setHasHistory] = useState<boolean | null>(null);
+  const [isCheckingHistory, setIsCheckingHistory] = useState(false);
+  const [dialogError, setDialogError] = useState<string | null>(null);
 
   // Normalize null to '' for ISBN
   const isbnValue = isEditing
@@ -115,19 +123,64 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
     }
   }
 
-  // Delete flow
-  function handleShowDelete() {
-    setShowDeleteConfirm(true);
+  // Withdraw / Delete flow
+  async function handleShowWithdraw() {
+    setShowWithdrawDialog(true);
+    setIsCheckingHistory(true);
+    setDialogError(null);
+
+    try {
+      const history = await fetchCheckoutHistory(media.mediaId);
+      // If there is ANY history, we will NOT offer true delete
+      setHasHistory(history.length > 0);
+    } catch (err) {
+      console.error('Failed to check checkout history', err);
+      // Safe default: assume there *might* be history, so don't offer delete
+      setDialogError(
+        'Unable to check checkout history. You can still withdraw this item, but deletion is disabled.'
+      );
+      setHasHistory(true);
+    } finally {
+      setIsCheckingHistory(false);
+    }
   }
-  function handleCancelDelete() {
-    setShowDeleteConfirm(false);
+
+  function handleCloseWithdrawDialog() {
+    setShowWithdrawDialog(false);
+    setDialogError(null);
+    setHasHistory(null);
   }
+
+  // Confirm withdraw
+  async function handleConfirmWithdraw() {
+    try {
+      const updated = await withdrawMedia(media.mediaId);
+      // Update local status so the UI reflects the change
+      setLocalData((prev) => ({
+        ...prev,
+        status: updated.status ?? 'WITHDRAWN',
+        disposalDisposition:
+          // if server sends this back, prefer it
+          (updated as any).disposalDisposition ?? prev.disposalDisposition,
+      }));
+      setShowWithdrawDialog(false);
+    } catch (err) {
+      console.error('Failed to withdraw media', err);
+      setDialogError('Failed to withdraw media. Please try again.');
+    }
+  }
+
+  // Confirm delete (only allowed when there is NO history)
   async function handleConfirmDelete() {
     try {
       await deleteMedia(media.mediaId);
       router.push('/dashboard/media');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to delete media', err);
+      // If backend says "nope", show a friendly message
+      setDialogError(
+        'Failed to delete media. This item may have circulation history. Try withdrawing instead.'
+      );
     }
   }
 
@@ -464,37 +517,102 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
               </button>
               <button
                 type='button'
-                onClick={handleShowDelete}
+                onClick={handleShowWithdraw}
                 className='ml-auto flex h-10 items-center rounded-lg bg-red-500 px-4 py-1 text-white hover:bg-red-600'
               >
-                Delete
+                Withdraw
               </button>
             </>
           )}
         </div>
       </form>
 
-      {/* Delete Confirmation */}
-      {showDeleteConfirm && (
+      {/* Withdraw / Delete Confirmation */}
+      {showWithdrawDialog && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/30'>
-          <div className='rounded-md bg-white p-4'>
-            <p className='mb-2 text-sm'>
-              Are you sure you want to delete this media?
-            </p>
-            <div className='flex justify-end gap-2'>
-              <button
-                onClick={handleConfirmDelete}
-                className='rounded-md bg-red-500 px-3 py-2 text-white hover:bg-red-600'
-              >
-                Yes, Delete
-              </button>
-              <button
-                onClick={handleCancelDelete}
-                className='rounded-md bg-gray-200 px-3 py-2 hover:bg-gray-300'
-              >
-                Cancel
-              </button>
-            </div>
+          <div className='w-full max-w-md rounded-md bg-white p-4 shadow-lg'>
+            {isCheckingHistory ? (
+              <p className='text-sm'>Checking circulation history...</p>
+            ) : (
+              <>
+                {dialogError && (
+                  <p className='mb-2 text-sm text-red-600'>{dialogError}</p>
+                )}
+
+                {/* Case 1: No history → offer Withdraw OR Delete */}
+                {hasHistory === false && (
+                  <>
+                    <p className='mb-3 text-sm'>
+                      This item has <strong>no checkout history</strong>.
+                      <br />
+                      You can either:
+                    </p>
+                    <ul className='mb-3 list-disc pl-5 text-sm'>
+                      <li>
+                        <strong>Withdraw</strong> – recommended; the item is
+                        removed from active circulation but kept for records.
+                      </li>
+                      <li>
+                        <strong>Delete permanently</strong> – only for mistakes;
+                        this cannot be undone.
+                      </li>
+                    </ul>
+                    <div className='flex justify-end gap-2'>
+                      <button
+                        onClick={handleConfirmWithdraw}
+                        className='rounded-md bg-amber-500 px-3 py-2 text-sm text-white hover:bg-amber-600'
+                      >
+                        Withdraw
+                      </button>
+                      <button
+                        onClick={handleConfirmDelete}
+                        className='rounded-md bg-red-500 px-3 py-2 text-sm text-white hover:bg-red-600'
+                      >
+                        Delete permanently
+                      </button>
+                      <button
+                        onClick={handleCloseWithdrawDialog}
+                        className='rounded-md bg-gray-200 px-3 py-2 text-sm hover:bg-gray-300'
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </>
+                )}
+
+                {/* Case 2: Has history or unknown → only allow Withdraw */}
+                {hasHistory !== false && (
+                  <>
+                    <p className='mb-3 text-sm'>
+                      <strong>
+                        This item has circulation history and cannot be deleted.
+                      </strong>
+                      <br />
+                      You can withdraw the item, which keeps it in the catalog
+                      for historical purposes but is no longer available for
+                      checkout.
+                      <br />
+                      <br />
+                      <strong>Withdraw this item?</strong>
+                    </p>
+                    <div className='flex justify-end gap-2'>
+                      <button
+                        onClick={handleConfirmWithdraw}
+                        className='rounded-md bg-amber-500 px-3 py-2 text-sm text-white hover:bg-amber-600'
+                      >
+                        Withdraw
+                      </button>
+                      <button
+                        onClick={handleCloseWithdrawDialog}
+                        className='rounded-md bg-gray-200 px-3 py-2 text-sm hover:bg-gray-300'
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </>
+                )}
+              </>
+            )}
           </div>
         </div>
       )}
