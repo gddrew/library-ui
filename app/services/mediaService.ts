@@ -132,6 +132,19 @@ export async function deleteMedia(mediaId: number) {
   }
 }
 
+// Withdraw a media item from circulation (avoids orphan loan history records)
+export async function withdrawMedia(mediaId: number) {
+  try {
+    const response = await apiClient.post(
+      `/api/collection/media/${mediaId}/withdraw`
+    );
+    return response.data as Media;
+  } catch (error) {
+    console.error(`Error withdrawing media with ID ${mediaId}:`, error);
+    throw error;
+  }
+}
+
 export interface LoanItem {
   loanId: number;
   patronId: number;
