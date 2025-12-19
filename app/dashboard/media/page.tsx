@@ -37,11 +37,16 @@ export default function MediaPage() {
         }
 
         const allMedia = await listMedia();
-        const filteredMedia = allMedia.filter(
-          (media) =>
-            media.mediaTitle.toLowerCase().includes(query.toLowerCase()) ||
-            media.mediaId.toString().includes(searchQuery)
-        );
+        const normalized = searchQuery.trim().toLowerCase();
+        const filteredMedia = allMedia.filter((item) => {
+          if (!normalized) return true;
+
+          const title = item.mediaTitle?.toLowerCase() ?? '';
+          const id = item.mediaId?.toString() ?? '';
+
+          return title.includes(normalized) || id.includes(searchQuery.trim());
+        });
+
         const itemsPerPage = 10;
         const offset = (page - 1) * itemsPerPage;
         const paginatedMedia = filteredMedia.slice(
@@ -65,7 +70,7 @@ export default function MediaPage() {
         setLoading(false);
       }
     },
-    [query]
+    []
   );
 
   // Prefetch data for adjacent pages
@@ -75,11 +80,18 @@ export default function MediaPage() {
 
       try {
         const allMedia = await listMedia();
-        const filteredMedia = allMedia.filter(
-          (media) =>
-            media.mediaTitle.toLowerCase().includes(query.toLowerCase()) ||
-            media.mediaId.toString().includes(debouncedQuery)
-        );
+        const normalized = debouncedQuery.trim().toLowerCase();
+        const filteredMedia = allMedia.filter((item) => {
+          if (!normalized) return true;
+
+          const title = item.mediaTitle?.toLowerCase() ?? '';
+          const id = item.mediaId?.toString() ?? '';
+
+          return (
+            title.includes(normalized) || id.includes(debouncedQuery.trim())
+          );
+        });
+
         const itemsPerPage = 10;
         const offset = (page - 1) * itemsPerPage;
         const paginatedMedia = filteredMedia.slice(
@@ -98,7 +110,7 @@ export default function MediaPage() {
         console.error('Error prefetching media:', err);
       }
     },
-    [debouncedQuery, query]
+    [debouncedQuery]
   );
 
   // Effect to fetch data when the page or query changes

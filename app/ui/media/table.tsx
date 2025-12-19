@@ -80,7 +80,7 @@ export default function MediaTable({ media }: MediaTableProps) {
                   Publisher
                 </th>
                 <th scope='col' className='w-40 px-3 py-3 font-medium'>
-                  ISBN
+                  Media Type
                 </th>
                 <th scope='col' className='w-24 px-3 py-3 font-medium'>
                   Date Acquired
@@ -110,9 +110,7 @@ export default function MediaTable({ media }: MediaTableProps) {
                   <td className='truncate px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap w-40'>
                     {media.publisherName}
                   </td>
-                  <td className='truncate px-3 py-3'>
-                    {formatISBN13(media.isbnId)}
-                  </td>
+                  <td className='truncate px-3 py-3'>{media.mediaType}</td>
                   <td className='truncate px-3 py-3'>
                     {formatDateToLocal(media.acquisitionDate)}
                   </td>

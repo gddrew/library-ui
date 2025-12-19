@@ -24,6 +24,10 @@ export async function listMedia(): Promise<Media[]> {
       lastUpdateDate: media.lastUpdateDate,
       status: media.status,
       isSensitive: media.isSensitive,
+      trackNumber: media.trackNumber,
+      genre: media.genre,
+      trackId: media.musicbrainzTrackId,
+      albumId: media.musicbrainzAlbumId,
     }));
   } catch (error) {
     console.error('Error fetching media:', error);

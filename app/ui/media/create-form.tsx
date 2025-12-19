@@ -11,6 +11,8 @@ import { isAxiosError } from 'axios';
 import {
   DISPOSAL_OPTIONS,
   DisposalDisposition,
+  GENRE,
+  Genre,
   MEDIA_TYPE,
   MediaType,
 } from '@/app/services/utils';
@@ -27,6 +29,7 @@ export default function Form({}: { media: MediaField[] }) {
   const [mediaType, setMediaType] = useState<MediaType>('Book');
   const [disposalDisposition, setDisposalDisposition] =
     useState<DisposalDisposition>('Art school library');
+  const [genre, setGenre] = useState<Genre>('Pop/Rock');
   const [classificationCategory, setClassificationCategory] = useState<
     'Fiction' | 'Non-Fiction' | ''
   >('');
@@ -87,6 +90,10 @@ export default function Form({}: { media: MediaField[] }) {
       );
     }
 
+    if (mediaType === 'Audio Recording') {
+      requiredFields.push('genre', 'trackNumber');
+    }
+
     requiredFields.forEach((field) => {
       if (!formData.get(field)?.toString().trim()) {
         newErrors[field] = 'This field is required';
@@ -118,6 +125,22 @@ export default function Form({}: { media: MediaField[] }) {
           ? (formData.get('classificationSubcategory') as string)
           : '',
       publisherName: formData.get('publisherName') as string,
+      trackNumber:
+        mediaType === 'Audio Recording'
+          ? parseInt(formData.get('trackNumber') as string, 10)
+          : 0,
+      genre:
+        mediaType === 'Audio Recording'
+          ? (formData.get('genre') as string)
+          : '',
+      musicbrainzTrackId:
+        mediaType === 'Audio Recording'
+          ? (formData.get('musicbrainzTrackId') as string)
+          : '',
+      musicbrainzAlbumId:
+        mediaType === 'Audio Recording'
+          ? (formData.get('musicbrainzAlbumId') as string)
+          : '',
       acquisitionDate: formData.get('acquisitionDate') as string,
       ...(disposalDisposition ? { disposalDisposition } : {}),
       isSensitive: formData.get('isSensitive') ? true : false,
@@ -211,30 +234,32 @@ export default function Form({}: { media: MediaField[] }) {
           />
         </div>
 
-        {/* Disposal Disposition */}
-        <div className='flex flex-col'>
-          <label
-            htmlFor='disposalDisposition'
-            className='text-sm font-medium mb-1'
-          >
-            Disposal Disposition
-          </label>
-          <select
-            id='disposalDisposition'
-            name='disposalDisposition'
-            value={disposalDisposition}
-            onChange={(e) =>
-              setDisposalDisposition(e.target.value as DisposalDisposition)
-            }
-            className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
-          >
-            {DISPOSAL_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* Disposal Disposition (Only for Books) */}
+        {mediaType === 'Book' && (
+          <div className='flex flex-col'>
+            <label
+              htmlFor='disposalDisposition'
+              className='text-sm font-medium mb-1'
+            >
+              Disposal Disposition
+            </label>
+            <select
+              id='disposalDisposition'
+              name='disposalDisposition'
+              value={disposalDisposition}
+              onChange={(e) =>
+                setDisposalDisposition(e.target.value as DisposalDisposition)
+              }
+              className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+            >
+              {DISPOSAL_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* Sensitive */}
         <div className='flex flex-col justify-end'>
@@ -273,18 +298,20 @@ export default function Form({}: { media: MediaField[] }) {
           )}
         </div>
 
-        {/* ISBN */}
-        <div className='flex flex-col'>
-          <label htmlFor='isbn' className='text-sm font-medium mb-1'>
-            ISBN
-          </label>
-          <input
-            type='text'
-            id='isbn'
-            name='isbn'
-            className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
-          />
-        </div>
+        {/* ISBN (only for Books) */}
+        {mediaType === 'Book' && (
+          <div className='flex flex-col'>
+            <label htmlFor='isbn' className='text-sm font-medium mb-1'>
+              ISBN
+            </label>
+            <input
+              type='text'
+              id='isbn'
+              name='isbn'
+              className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+            />
+          </div>
+        )}
 
         {/* Author */}
         <div className='flex flex-col'>
@@ -422,34 +449,111 @@ export default function Form({}: { media: MediaField[] }) {
           </div>
         )}
 
-        {/* Classification Sub-category */}
-        <div className='flex flex-col'>
-          <label
-            htmlFor='classificationSubcategory'
-            className='mb-2 block text-sm font-medium'
-          >
-            Classification Sub-category
-          </label>
-          <select
-            id='classificationSubcategory'
-            name='classificationSubcategory'
-            className='peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 px-3 text-sm outline-2'
-            value={classificationSubCategory}
-            onChange={(e) => setClassificationSubCategory(e.target.value)}
-            required={mediaType === 'Book'}
-            disabled={mediaType !== 'Book'}
-          >
-            <option value='' disabled>
-              Select a sub-category
-            </option>
-            {getSubCategoryOptions().map((option: string, index: number) => (
-              <option key={index} value={option}>
-                {option}
+        {/* Classification Sub-category (Only for Books) */}
+        {mediaType === 'Book' && (
+          <div className='flex flex-col'>
+            <label
+              htmlFor='classificationSubcategory'
+              className='mb-2 block text-sm font-medium'
+            >
+              Classification Sub-category
+            </label>
+            <select
+              id='classificationSubcategory'
+              name='classificationSubcategory'
+              className='peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 px-3 text-sm outline-2'
+              value={classificationSubCategory}
+              onChange={(e) => setClassificationSubCategory(e.target.value)}
+              required={mediaType === 'Book'}
+              disabled={mediaType !== 'Book'}
+            >
+              <option value='' disabled>
+                Select a sub-category
               </option>
-            ))}
-          </select>
-        </div>
+              {getSubCategoryOptions().map((option: string, index: number) => (
+                <option key={index} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
+
+      {/* Audio Information */}
+      {mediaType === 'Audio Recording' && (
+        <>
+          <h2 className='text-xl font-semibold mt-6 mb-4'>Audio Information</h2>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
+            <div className='flex flex-col'>
+              <label htmlFor='trackNumber' className='text-sm font-medium mb-1'>
+                Track Number
+              </label>
+              <input
+                type='number'
+                id='trackNumber'
+                name='trackNumber'
+                className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+                placeholder='1'
+              />
+            </div>
+
+            <div className='flex flex-col'>
+              <label htmlFor='genre' className='text-sm font-medium mb-1'>
+                Genre
+              </label>
+              <select
+                id='genre'
+                name='genre'
+                className='peer w-full cursor-pointer rounded-md border border-gray-200 py-2 px-3 text-sm outline-2'
+                value={genre}
+                onChange={(e) => setGenre(e.target.value as Genre)}
+                required={mediaType === 'Audio Recording'}
+                disabled={mediaType !== 'Audio Recording'}
+              >
+                <option value='' disabled>
+                  Select a genre
+                </option>
+                {GENRE.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className='flex flex-col'>
+              <label
+                htmlFor='musicbrainzTrackId'
+                className='text-sm font-medium mb-1'
+              >
+                MusicBrainz Track ID
+              </label>
+              <input
+                type='text'
+                id='musicbrainzTrackId'
+                name='musicbrainzTrackId'
+                className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+              />
+            </div>
+
+            <div className='flex flex-col'>
+              <label
+                htmlFor='musicbrainzAlbumId'
+                className='text-sm font-medium mb-1'
+              >
+                MusicBrainz Album ID
+              </label>
+              <input
+                type='text'
+                id='musicbrainzAlbumId'
+                name='musicbrainzAlbumId'
+                className='peer w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+              />
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Buttons */}
       <div className='flex justify-end gap-4 mt-6'>
