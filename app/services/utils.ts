@@ -137,6 +137,26 @@ export const DISPOSAL_OPTIONS = [
 ] as const;
 export type DisposalDisposition = (typeof DISPOSAL_OPTIONS)[number]['value'];
 
+// Genres for Audio Recordings
+export const GENRE = [
+  { value: 'Pop/Rock', label: 'Pop/Rock' },
+  { value: "Children's", label: "Children's" },
+  { value: 'Christmas', label: 'Christmas' },
+  { value: 'Country', label: 'Country' },
+  { value: 'Easy Listening', label: 'Easy Listening' },
+  { value: 'Electronic', label: 'Electronic' },
+  { value: 'Folk', label: 'Folk' },
+  { value: 'International', label: 'International' },
+  { value: 'Jazz', label: 'Jazz' },
+  { value: 'Latin', label: 'Latin' },
+  { value: 'R&B', label: 'R&B' },
+  { value: 'Reggae', label: 'Reggae' },
+  { value: 'Religious', label: 'Religious' },
+  { value: 'Stage & Screen', label: 'Stage & Screen' },
+  { value: 'Vocal', label: 'Vocal' },
+] as const;
+export type Genre = (typeof GENRE)[number]['value'];
+
 // Pagination
 export const generatePagination = (
   currentPage: number,
