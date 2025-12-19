@@ -97,6 +97,7 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
           classificationCategory: '',
           classificationSubCategory: '',
           numberPages: 0, // Clear number of pages
+          disposalDisposition: '', // clear for non-book types
         };
       }
       return { ...prev, [name]: value };
@@ -296,25 +297,27 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
             />
           </div>
 
-          {/* Disposal Disposition */}
-          <div>
-            <label className='mb-1 block text-sm font-medium'>
-              Disposal Disposition
-            </label>
-            <select
-              name='disposalDisposition'
-              value={localData.disposalDisposition ?? ''}
-              onChange={handleChange}
-              disabled={!isEditing}
-              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
-            >
-              {DISPOSAL_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* Disposal Disposition - only for physical media */}
+          {localData.mediaType === 'Book' && (
+            <div>
+              <label className='mb-1 block text-sm font-medium'>
+                Disposal Disposition
+              </label>
+              <select
+                name='disposalDisposition'
+                value={localData.disposalDisposition ?? ''}
+                onChange={handleChange}
+                disabled={!isEditing}
+                className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+              >
+                {DISPOSAL_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Sensitive Content */}
           <div className='flex items-center'>
@@ -335,156 +338,288 @@ export default function MediaDetails({ media }: { media: MediaForm }) {
             </label>
           </div>
         </div>
+        {/* === BOOK DETAILS === */}
+        {localData.mediaType === 'Book' && (
+          <>
+            <h2 className='text-xl font-semibold mb-2 border-b pb-2'>
+              Book Information
+            </h2>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
+              {/* Publisher */}
+              <div>
+                <label className='mb-1 block text-sm font-medium'>
+                  Publisher
+                </label>
+                <input
+                  name='publisherName'
+                  type='text'
+                  value={localData.publisherName}
+                  onChange={handleChange}
+                  readOnly={!isEditing}
+                  className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+                />
+              </div>
 
-        <h2 className='text-xl font-semibold mb-2 border-b pb-2'>
-          Book Information
-        </h2>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
-          {/* Publisher */}
-          <div>
-            <label className='mb-1 block text-sm font-medium'>Publisher</label>
-            <input
-              name='publisherName'
-              type='text'
-              value={localData.publisherName}
-              onChange={handleChange}
-              readOnly={!isEditing}
-              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
-            />
-          </div>
+              {/* ISBN */}
+              <div>
+                <label className='mb-1 block text-sm font-medium'>ISBN</label>
+                <input
+                  name='isbnId'
+                  type='text'
+                  value={isbnValue}
+                  onChange={handleChange}
+                  readOnly={!isEditing}
+                  className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+                />
+              </div>
 
-          {/* ISBN */}
-          <div>
-            <label className='mb-1 block text-sm font-medium'>ISBN</label>
-            <input
-              name='isbnId'
-              type='text'
-              value={isbnValue}
-              onChange={handleChange}
-              readOnly={!isEditing}
-              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
-            />
-          </div>
+              {/* Author */}
+              <div>
+                <label className='mb-1 block text-sm font-medium'>Author</label>
+                <input
+                  name='authorName'
+                  type='text'
+                  value={localData.authorName}
+                  onChange={handleChange}
+                  readOnly={!isEditing}
+                  className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+                />
+              </div>
 
-          {/* Author */}
-          <div>
-            <label className='mb-1 block text-sm font-medium'>Author</label>
-            <input
-              name='authorName'
-              type='text'
-              value={localData.authorName}
-              onChange={handleChange}
-              readOnly={!isEditing}
-              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
-            />
-          </div>
+              {/* Number of Pages */}
+              <div>
+                <label className='mb-1 block text-sm font-medium'>
+                  Number of Pages
+                </label>
+                <input
+                  name='numberPages'
+                  type='number'
+                  value={localData.numberPages}
+                  onChange={handleChange}
+                  readOnly={!isEditing}
+                  className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+                />
+              </div>
 
-          {/* Number of Pages */}
-          <div>
-            <label className='mb-1 block text-sm font-medium'>
-              Number of Pages
-            </label>
-            <input
-              name='numberPages'
-              type='number'
-              value={localData.numberPages}
-              onChange={handleChange}
-              readOnly={!isEditing}
-              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
-            />
-          </div>
+              {/* Publication Year */}
+              <div>
+                <label className='mb-1 block text-sm font-medium'>
+                  Publication Year
+                </label>
+                <input
+                  name='publicationYear'
+                  type='text'
+                  value={localData.publicationYear}
+                  onChange={handleChange}
+                  readOnly={!isEditing}
+                  className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+                />
+              </div>
 
-          {/* Publication Year */}
-          <div>
-            <label className='mb-1 block text-sm font-medium'>
-              Publication Year
-            </label>
-            <input
-              name='publicationYear'
-              type='text'
-              value={localData.publicationYear}
-              onChange={handleChange}
-              readOnly={!isEditing}
-              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
-            />
-          </div>
-
-          {/* Format */}
-          <div>
-            <label className='mb-1 block text-sm font-medium'>Format</label>
-            <select
-              name='mediaFormat'
-              value={localData.mediaFormat}
-              onChange={handleChange}
-              disabled={!isEditing}
-              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
-            >
-              {localData.mediaType === 'Book' && (
-                <>
+              {/* Format (book) */}
+              <div>
+                <label className='mb-1 block text-sm font-medium'>Format</label>
+                <select
+                  name='mediaFormat'
+                  value={localData.mediaFormat}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+                >
                   <option value='hardcover'>Hardcover</option>
                   <option value='softcover'>Softcover</option>
-                </>
-              )}
-              {localData.mediaType === 'Video' && (
-                <>
-                  <option value='DVD'>DVD</option>
-                  <option value='Streaming'>Streaming</option>
-                </>
-              )}
-              {localData.mediaType === 'Audio Recording' && (
-                <>
+                </select>
+              </div>
+
+              {/* Classification Category */}
+              <div>
+                <label className='mb-2 block text-sm font-medium'>
+                  Classification Category
+                </label>
+                <select
+                  name='classificationCategory'
+                  value={localData.classificationCategory || ''}
+                  onChange={handleChange}
+                  required
+                  disabled={!isEditing}
+                  className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm mb-6'
+                >
+                  <option value='' disabled>
+                    Select a category
+                  </option>
+                  <option value='Fiction'>Fiction</option>
+                  <option value='Non-Fiction'>Non-Fiction</option>
+                </select>
+              </div>
+
+              {/* Classification Sub-category */}
+              <div>
+                <label className='mb-1 block text-sm font-medium'>
+                  Classification Sub-category
+                </label>
+                <select
+                  name='classificationSubCategory'
+                  value={localData.classificationSubCategory || ''}
+                  onChange={handleChange}
+                  required
+                  disabled={!isEditing}
+                  className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm mb-6'
+                >
+                  <option value='' disabled>
+                    Select a sub-category
+                  </option>
+                  {getSubCategoryOptions().map(
+                    (option: string, index: number) => (
+                      <option key={index} value={option}>
+                        {option}
+                      </option>
+                    )
+                  )}
+                </select>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* === AUDIO DETAILS === */}
+        {localData.mediaType === 'Audio Recording' && (
+          <>
+            <h2 className='text-xl font-semibold mb-2 border-b pb-2'>
+              Audio Recording Information
+            </h2>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
+              {/* Label (reuses publisherName) */}
+              <div>
+                <label className='mb-1 block text-sm font-medium'>Label</label>
+                <input
+                  name='publisherName'
+                  type='text'
+                  value={localData.publisherName}
+                  onChange={handleChange}
+                  readOnly={!isEditing}
+                  className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+                />
+              </div>
+
+              {/* Primary Artist (reuses authorName) */}
+              <div>
+                <label className='mb-1 block text-sm font-medium'>
+                  Primary Artist
+                </label>
+                <input
+                  name='authorName'
+                  type='text'
+                  value={localData.authorName}
+                  onChange={handleChange}
+                  readOnly={!isEditing}
+                  className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+                />
+              </div>
+
+              {/* Release Year (reuses publicationYear) */}
+              <div>
+                <label className='mb-1 block text-sm font-medium'>
+                  Release Year
+                </label>
+                <input
+                  name='publicationYear'
+                  type='text'
+                  value={localData.publicationYear}
+                  onChange={handleChange}
+                  readOnly={!isEditing}
+                  className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+                />
+              </div>
+
+              {/* Format (audio) */}
+              <div>
+                <label className='mb-1 block text-sm font-medium'>Format</label>
+                <select
+                  name='mediaFormat'
+                  value={localData.mediaFormat}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+                >
                   <option value='CD'>CD</option>
                   <option value='MP3'>MP3</option>
-                </>
-              )}
-            </select>
-          </div>
+                </select>
+              </div>
 
-          {/* Classification Category */}
-          <div>
-            <label className='mb-2 block text-sm font-medium'>
-              Classification Category
-            </label>
-            <select
-              name='classificationCategory'
-              value={localData.classificationCategory || ''}
-              onChange={handleChange}
-              required={localData.mediaType === 'Book'}
-              disabled={!isEditing || localData.mediaType !== 'Book'}
-              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm mb-6'
-            >
-              <option value='' disabled>
-                Select a category
-              </option>
-              <option value='Fiction'>Fiction</option>
-              <option value='Non-Fiction'>Non-Fiction</option>
-            </select>
-          </div>
+              {/* You can add more audio-specific fields here later:
+          track count, duration, disc number, etc.
+          Just follow the same pattern and wire to your MediaForm fields. */}
+            </div>
+          </>
+        )}
 
-          {/* Classification Sub-category */}
-          <div>
-            <label className='mb-1 block text-sm font-medium'>
-              Classification Sub-category
-            </label>
-            <select
-              name='classificationSubCategory'
-              value={localData.classificationSubCategory || ''}
-              onChange={handleChange}
-              required={localData.mediaType === 'Book'}
-              disabled={!isEditing || localData.mediaType !== 'Book'}
-              className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm mb-6'
-            >
-              <option value='' disabled>
-                Select a sub-category
-              </option>
-              {getSubCategoryOptions().map((option: string, index: number) => (
-                <option key={index} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+        {/* === VIDEO DETAILS (optional) === */}
+        {localData.mediaType === 'Video' && (
+          <>
+            <h2 className='text-xl font-semibold mb-2 border-b pb-2'>
+              Video Information
+            </h2>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
+              {/* Studio (reuses publisherName) */}
+              <div>
+                <label className='mb-1 block text-sm font-medium'>Studio</label>
+                <input
+                  name='publisherName'
+                  type='text'
+                  value={localData.publisherName}
+                  onChange={handleChange}
+                  readOnly={!isEditing}
+                  className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+                />
+              </div>
+
+              {/* Director (reuses authorName) */}
+              <div>
+                <label className='mb-1 block text-sm font-medium'>
+                  Director
+                </label>
+                <input
+                  name='authorName'
+                  type='text'
+                  value={localData.authorName}
+                  onChange={handleChange}
+                  readOnly={!isEditing}
+                  className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+                />
+              </div>
+
+              {/* Release Year */}
+              <div>
+                <label className='mb-1 block text-sm font-medium'>
+                  Release Year
+                </label>
+                <input
+                  name='publicationYear'
+                  type='text'
+                  value={localData.publicationYear}
+                  onChange={handleChange}
+                  readOnly={!isEditing}
+                  className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+                />
+              </div>
+
+              {/* Format (video) */}
+              <div>
+                <label className='mb-1 block text-sm font-medium'>Format</label>
+                <select
+                  name='mediaFormat'
+                  value={localData.mediaFormat}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className='block w-full rounded-md border border-gray-200 py-2 px-3 text-sm'
+                >
+                  <option value='DVD'>DVD</option>
+                  <option value='Streaming'>Streaming</option>
+                </select>
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Action Buttons */}
         <div className='mt-6 flex items-center gap-4'>
