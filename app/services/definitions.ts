@@ -39,6 +39,10 @@ export type Media = {
   classificationSubCategory: string;
   publisherName: string;
   disposalDisposition: string;
+  trackNumber: number;
+  genre: string;
+  musicbrainzTrackId: string;
+  musicbrainzAlbumId: string;
   acquisitionDate: string;
   lastUpdateDate: Date;
   status: string;
@@ -177,6 +181,10 @@ export type MediaForm = {
   classificationSubCategory: string;
   publisherName: string;
   disposalDisposition: string;
+  trackNumber: number;
+  genre: string;
+  musicbrainzTrackId: string;
+  musicbrainzAlbumId: string;
   acquisitionDate: Date;
   lastUpdateDate: Date;
   status: string;
