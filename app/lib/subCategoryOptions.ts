@@ -18,6 +18,7 @@ export const subCategoryOptions: {
     'Communications',
     'History',
     'Management',
+    'Philosopy & Religion',
     'Self-help',
     'Technical',
   ],
